@@ -125,6 +125,7 @@ class InventoryService:
         self._exigir(actor, 'ENTREGAR_DEVOLVER')
         if danio: self._exigir(actor, 'REGISTRAR_DANO')
         p=self._find_prestamo(pid)
+        if p['estado']=='Devuelta': raise BusinessError('El préstamo ya fue devuelto.')
         if p['estado']!='Entregada': raise BusinessError('Esta reserva no tiene un equipo entregado.')
         e=self.obtener_equipo(p['equipoId']); tarde=self.reloj.ahora()>a_utc(p['fin'])
         recibe = (responsable_devolucion or '').strip() or (str(actor.nombre or '') if actor else '')
