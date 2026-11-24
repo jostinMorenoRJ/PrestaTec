@@ -11,7 +11,7 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 3 | `reloj-politicas` | C2 | INST-03; prepara DEC-01..DEC-06 sin resolverlos | completado (`57aaf28`) |
 | 4 | `persistencia-sqlite` | C3 | PDF-RNF04, RES-03 | completado (`170c221`) |
 | 5 | `respaldo-restauracion` | C4 | PDF-RNF04 | completado (`88560ef`) |
-| 6 | `identidad-rbac` | C5 | PDF-RNF01, RES-02 | completado (`c70206e`) |
+| 6 | `identidad-rbac` | C5 | PDF-RNF01, RES-02 | completado (`1b25d73`) |
 | 7 | `auditoria` | C6 | RES-03 | pendiente |
 | 8 | `disponibilidad-conflictos` | C7 | INST-03, INST-05, RF03, RF05 | pendiente |
 | 9 | `prestamo-trazable` | C8 | INST-04, RF06, RF07, EXC-02 | pendiente |
