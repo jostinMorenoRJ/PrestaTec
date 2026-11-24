@@ -20,6 +20,12 @@
       "type": "shell",
       "command": "${command:python.interpreterPath} migrar.py",
       "problemMatcher": []
+    },
+    {
+      "label": "PrestaTec: crear respaldo verificable",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} respaldar.py crear data.json",
+      "problemMatcher": []
     }
   ]
 }

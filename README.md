@@ -58,7 +58,7 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **35 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 16 de los cambios C1–C3 (repositorio, reloj, persistencia, configuración y migración). Las de caracterización documentan el comportamiento actual, incluidos defectos conocidos. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **42 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 23 de los cambios C1–C4 (repositorio, reloj, persistencia, configuración, migración, respaldo y restauración). Las de caracterización documentan el comportamiento actual, incluidos defectos conocidos. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -107,6 +107,17 @@ py run.py
 ```
 
 Volver a `json` (o quitar las variables) restaura el comportamiento original sin tocar la lógica de negocio.
+
+### Respaldos
+
+Cada copia se guarda con timestamp UTC, SHA-256 y conteo de entidades; la migración deja un manifiesto verificable junto al respaldo. Desde VS Code: **Tasks: Run Task → PrestaTec: crear respaldo verificable**. Desde la terminal:
+
+```powershell
+py respaldar.py crear data.json --directorio backups
+py respaldar.py restaurar backups\data_....manifest.json data.json --confirmar
+```
+
+`restaurar` valida hash y conteos antes y después de reemplazar el destino. Si el destino es más reciente que la copia, exige `--confirmar`. No hay purga automática: las copias se conservan mientras DEC-06 no defina una retención.
 
 ## 5. Módulos de la interfaz
 

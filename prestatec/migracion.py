@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .errors import BusinessError
@@ -91,9 +92,12 @@ def migrar_desde_json(origen, destino, respaldo=None, sobrescribir=False):
     """
     origen, destino = Path(origen), Path(destino)
     respaldo = Path(respaldo) if respaldo is not None else origen.with_suffix('.json.bak')
+    ruta_manifiesto = respaldo.with_name(respaldo.name + '.manifest.json')
     if not origen.exists():
         raise BusinessError(f'No existe el archivo de origen: {origen}')
-    for ruta, nombre in ((destino, 'destino'), (respaldo, 'respaldo')):
+    for ruta, nombre in (
+        (destino, 'destino'), (respaldo, 'respaldo'), (ruta_manifiesto, 'manifiesto'),
+    ):
         if ruta.exists() and not sobrescribir:
             raise BusinessError(f'El {nombre} ya existe: {ruta}. No se sobrescribirá sin autorización.')
 
@@ -110,6 +114,22 @@ def migrar_desde_json(origen, destino, respaldo=None, sobrescribir=False):
         raise BusinessError('El archivo de origen debe contener un objeto JSON.')
 
     estado = normalizar(datos)
+    conteos = {clave: len(valores) for clave, valores in estado.items()}
+    manifiesto = {
+        'origen': str(origen.resolve()),
+        'archivo': str(respaldo.resolve()),
+        'creadoEn': datetime.now(timezone.utc).isoformat(),
+        'sha256': sha,
+        'conteos': conteos,
+        'tamanio': respaldo.stat().st_size,
+        'backend': 'json',
+    }
+    ruta_manifiesto.write_text(
+        json.dumps(manifiesto, ensure_ascii=False, indent=2, default=str),
+        encoding='utf-8',
+    )
+    manifiesto['manifiesto'] = str(ruta_manifiesto.resolve())
+
     temporal = destino.with_name(destino.name + '.tmp')
     if temporal.exists():
         temporal.unlink()
@@ -119,7 +139,13 @@ def migrar_desde_json(origen, destino, respaldo=None, sobrescribir=False):
     return {
         'origen': str(origen),
         'destino': str(destino),
-        'respaldo': {'ruta': str(respaldo), 'sha256': sha},
+        'respaldo': {
+            'ruta': str(respaldo),
+            'sha256': sha,
+            'creadoEn': manifiesto['creadoEn'],
+            'conteos': conteos,
+            'manifiesto': manifiesto['manifiesto'],
+        },
         'schema_version': SCHEMA_VERSION,
-        'registros': {clave: len(valores) for clave, valores in estado.items()},
+        'registros': conteos,
     }
