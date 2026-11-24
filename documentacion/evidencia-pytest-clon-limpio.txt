@@ -1,5 +1,5 @@
 Evidencia: clon limpio del repositorio, sin data.json, identidades.json ni ZIP.
-Commit del clon: 8a70e41 (estado final: tres ciclos, CLI corregidos y nombres unificados).
+Commit del clon: 880635b (estado final: tres ciclos, CLI ejecutables y nombres unificados).
 Python 3.14.10, pytest 9.2.0. Comando: python -m pytest -v
 Rutas locales del entorno de ejecucion sustituidas por marcadores para no publicarlas.
 ============================= test session starts =============================
@@ -101,4 +101,4 @@ tests/test_web.py::test_api_registra_y_consulta_equipo PASSED            [ 97%]
 tests/test_web.py::test_api_rechaza_documento_repetido PASSED            [ 98%]
 tests/test_web.py::test_api_ciclo_prestamo_devolucion PASSED             [100%]
 
-============================= 90 passed in 7.21s ==============================
+============================= 90 passed in 6.22s ==============================
