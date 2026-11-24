@@ -7,11 +7,16 @@ from datetime import datetime
 from uuid import uuid4
 
 from .errors import BusinessError
+from .politicas import Politicas
+from .reloj import Reloj, a_utc
 from .repository import JsonFileRepository, Repository
 
 class InventoryService:
-    def __init__(self, data_file=None, seed=True, repository: Repository | None = None):
+    def __init__(self, data_file=None, seed=True, repository: Repository | None = None,
+                 reloj: Reloj | None = None, politicas: Politicas | None = None):
         self.repository = repository or JsonFileRepository(data_file)
+        self.reloj = reloj or Reloj()
+        self.politicas = politicas or Politicas()
         self.data = self.repository.load()
         if seed and not self.data['equipos'] and not self.data['usuarios']:
             self._seed(); self._save()
@@ -19,7 +24,7 @@ class InventoryService:
     def _save(self):
         self.repository.save(self.data)
     def _id(self): return uuid4().hex[:8]
-    def _log(self, equipo_id, texto): self.data['eventos'].append({'fecha': datetime.now().isoformat(), 'equipoId': equipo_id, 'texto': texto})
+    def _log(self, equipo_id, texto): self.data['eventos'].append({'fecha': self.reloj.ahora().isoformat(), 'equipoId': equipo_id, 'texto': texto})
 
     def _seed(self):
         for tipo, nombre in [('Portátil','Lenovo ThinkPad E14'),('Portátil','Dell Latitude 3420'),('Portátil','HP ProBook 440'),('Portátil','Acer Aspire 5'),('Proyector','Epson X49'),('Proyector','BenQ MS550')]: self.registrar_equipo(tipo,nombre,'Biblioteca')
@@ -44,14 +49,13 @@ class InventoryService:
     def _choque(self, equipo_id, inicio, fin):
         for p in self.data['prestamos']:
             if p['equipoId']!=equipo_id or p['estado'] not in ('Confirmada','Entregada'): continue
-            pi,pf=datetime.fromisoformat(p['inicio']),datetime.fromisoformat(p['fin'])
-            if p['estado']=='Entregada' and pf<datetime.now(): pf=datetime.max
+            pi,pf=a_utc(p['inicio']),a_utc(p['fin'])
+            if p['estado']=='Entregada' and pf<self.reloj.ahora(): pf=datetime.max.replace(tzinfo=pf.tzinfo)
             if pi<fin and inicio<pf: return True
         return False
 
     def crear_prestamo(self, equipo_id, documento, inicio, fin):
-        if isinstance(inicio,str): inicio=datetime.fromisoformat(inicio)
-        if isinstance(fin,str): fin=datetime.fromisoformat(fin)
+        inicio,fin=a_utc(inicio),a_utc(fin)
         if fin<=inicio: raise BusinessError('La fecha de fin debe ser posterior al inicio.')
         e=next((x for x in self.data['equipos'] if x['id']==equipo_id),None)
         if not e: raise BusinessError('Equipo no encontrado.')
@@ -77,15 +81,15 @@ class InventoryService:
         if not (responsable or '').strip(): raise BusinessError('Indique el responsable de la entrega.')
         e=self.obtener_equipo(p['equipoId'])
         if e['estado']!='Disponible' or self._prestamo_activo(e['id']): raise BusinessError('El equipo no está disponible para entrega.')
-        p.update(estado='Entregada',entregadoEn=datetime.now().isoformat(),responsable=responsable.strip())
+        p.update(estado='Entregada',entregadoEn=self.reloj.ahora().isoformat(),responsable=responsable.strip())
         u=next(x for x in self.data['usuarios'] if x['id']==p['usuarioId'])
         self._log(e['id'],f"Entregado a {u['nombre']} por {responsable}. Estado: {estado_entrega or 'Bueno'}."); self._save(); return p
 
     def devolver(self, pid, danio=False, nota=''):
         p=self._find_prestamo(pid)
         if p['estado']!='Entregada': raise BusinessError('Esta reserva no tiene un equipo entregado.')
-        e=self.obtener_equipo(p['equipoId']); tarde=datetime.now()>datetime.fromisoformat(p['fin'])
-        p.update(estado='Devuelta',devueltoEn=datetime.now().isoformat(),nota=nota or '')
+        e=self.obtener_equipo(p['equipoId']); tarde=self.reloj.ahora()>a_utc(p['fin'])
+        p.update(estado='Devuelta',devueltoEn=self.reloj.ahora().isoformat(),nota=nota or '')
         if danio: e['estado']='Mantenimiento'
         self._log(e['id'],f"Devuelto{' con retraso' if tarde else ''}. {'Daño reportado: '+(nota or 'Sin detalle') if danio else 'Sin novedad.'}"); self._save(); return p
 
@@ -111,17 +115,24 @@ class InventoryService:
         out=[]
         for p in sorted(self.data['prestamos'],key=lambda x:x['inicio'],reverse=True):
             e=self.obtener_equipo(p['equipoId']); u=next(x for x in self.data['usuarios'] if x['id']==p['usuarioId'])
-            estado='Atrasada' if p['estado']=='Entregada' and datetime.fromisoformat(p['fin'])<datetime.now() else p['estado']
+            estado='Atrasada' if p['estado']=='Entregada' and a_utc(p['fin'])<self.reloj.ahora() else p['estado']
             out.append({**p,'equipo':e['nombre'],'usuario':u['nombre'],'estado':estado})
         return out
     def historial_equipo(self,eid):
         self.obtener_equipo(eid); return sorted([x for x in self.data['eventos'] if x['equipoId']==eid],key=lambda x:x['fecha'],reverse=True)
     def resumen(self):
         ps=self.data['prestamos']; activos=[p for p in ps if p['estado']=='Entregada']
-        return {'total':len(self.data['equipos']),'disponibles':sum(1 for e in self.data['equipos'] if e['estado']=='Disponible' and not self._prestamo_activo(e['id'])),'prestados':len(activos),'mantenimiento':sum(1 for e in self.data['equipos'] if e['estado']!='Disponible'),'atrasados':sum(1 for p in activos if datetime.fromisoformat(p['fin'])<datetime.now()),'reservasHoy':sum(1 for p in ps if p['estado']=='Confirmada' and datetime.fromisoformat(p['inicio']).date()==datetime.now().date())}
+        ahora=self.reloj.ahora()
+        return {
+            'total': len(self.data['equipos']),
+            'disponibles': sum(1 for e in self.data['equipos'] if e['estado']=='Disponible' and not self._prestamo_activo(e['id'])),
+            'prestados': len(activos),
+            'mantenimiento': sum(1 for e in self.data['equipos'] if e['estado']!='Disponible'),
+            'atrasados': sum(1 for p in activos if p.get('fin') and a_utc(p['fin'])<ahora),
+            'reservasHoy': sum(1 for p in ps if p['estado']=='Confirmada' and p.get('inicio') and a_utc(p['inicio']).date()==ahora.date()),
+        }
     def disponibilidad(self,tipo,inicio,fin):
-        if isinstance(inicio,str): inicio=datetime.fromisoformat(inicio)
-        if isinstance(fin,str): fin=datetime.fromisoformat(fin)
+        inicio,fin=a_utc(inicio),a_utc(fin)
         return [{'id':e['id'],'nombre':e['nombre']} for e in self.data['equipos'] if e['tipo']==tipo and e['estado']=='Disponible' and not self._choque(e['id'],inicio,fin)]
 
     def verificar_porteria(self,codigo):
