@@ -250,6 +250,14 @@ La especificación está en `openspec/` y las pruebas están en `tests/`. El ord
 3. **TDD — Green:** se implementó `prestatec/service.py` y las rutas HTTP para satisfacerlas.
 4. **TDD — Refactor:** se separaron reglas de negocio, servidor e interfaz para mantener el código organizado y sencillo.
 
+Las tareas de cada incremento están en `openspec/changes/<change>/tasks.md`, con
+casilla `[x]` si ya se completó y `[ ]` si sigue pendiente. Los dos ciclos del
+núcleo están todos marcados: `openspec/changes/devolucion-responsable/tasks.md`
+y `openspec/changes/devolucion-unica/tasks.md`. El índice completo, con el
+estado de cada change (C0–C13 y los dos del núcleo), está en
+`openspec/changes/README.md`. Los changes C6–C11 siguen con casillas `[ ]` a la
+espera de decisiones institucionales.
+
 ## 7. Control de versiones
 
 El código está publicado en **https://github.com/jostinMorenoRJ/PrestaTec.git**, rama `main`. El historial empieza en `8a92475 chore: linea base y gobernanza (C0)` —que ya incluía `service.py` y `test_prestamos.py`— y continúa sin reescrituras. Etiquetas disponibles en el remoto:

@@ -5,7 +5,8 @@
 - [x] Registrar la evidencia RED (2 fallos; 77 pruebas antiguas en verde).
 - [x] GREEN: implementar `responsable_devolucion` en `InventoryService.devolver()`.
 - [x] Verificar la suite completa en verde (79 pruebas).
-- [x] Documentar trazabilidad, README y evidencia; actualizar el ZIP de entrega.
+- [x] Documentar trazabilidad, README y evidencia. (El ZIP de entrega que se
+      actualizó en este paso se retiró del repositorio en `5df149b`.)
 
 ## Evidencia de commits
 

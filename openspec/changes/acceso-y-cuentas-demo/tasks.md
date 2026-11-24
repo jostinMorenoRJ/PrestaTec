@@ -8,4 +8,4 @@
 - [x] GREEN: mensaje de error visible y foco inicial del formulario.
 - [x] Verificar en navegador que aparece la pantalla y que los tres perfiles entran.
 - [x] REFACTOR: suite completa en verde (77 pruebas) y documentación actualizada.
-- [x] Commit local (sin remoto ni push).
+- [x] Commit local `2be8cd9`; publicado después en `main` con el resto del historial.
