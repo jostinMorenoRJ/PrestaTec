@@ -86,3 +86,18 @@ git log --oneline --decorate -4               # orden Spec → Test → Código
 - Compatibilidad conservada: las nueve pruebas originales de `test_prestamos.py`
   y las 77 del resto de la suite no se modificaron para lograr GREEN.
 - Árbol limpio y publicado en `https://github.com/jostinMorenoRJ/PrestaTec.git`.
+
+## 6. Aclaración posterior sobre el clon limpio
+
+Los tres commits de este ciclo se ejecutaron con `identidades.json` presente en
+el directorio de trabajo. En un clon limpio de esos commits,
+`test_ACC01_cuentas_reales_inician_sesion_con_su_perfil` fallaba porque leía ese
+archivo, que está en `.gitignore`: la suite daba 1 fallo adicional. La prueba se
+corrigió en `ca6aa0c` para crear sus credenciales en `tmp_path`.
+
+Por eso la evidencia de este ciclo se mide sobre `tests/test_prestamos.py`, que
+no depende de archivos ignorados y da los mismos números en local y en clon
+limpio: RED `2 failed, 9 passed`, GREEN `11 passed`. No se reescribió el
+historial: las etiquetas `nucleo-1-spec`, `nucleo-2-red` y `nucleo-3-green`
+siguen apuntando a los commits originales. La suite completa en el HEAD actual
+es `80 passed`, verificada en clon limpio.

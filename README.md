@@ -6,25 +6,47 @@ Aplicación web local desarrollada en Python. Permite administrar inventario, us
 
 | Lo solicitado | Dónde encontrarlo |
 |---|---|
-| **Especificación (SDD)** | `openspec/specs/prestamos/spec.md` (RF01–RF09) y el delta `openspec/changes/devolucion-responsable/specs/prestamos/spec.md` (RF06a) |
-| **Pruebas (pytest)** | `tests/test_prestamos.py` — 11 pruebas de registro, préstamo, devolución, disponibilidad, daño, portería y persistencia |
+| **Especificación (SDD)** | `openspec/specs/prestamos/spec.md` (RF01–RF09) y los deltas `openspec/changes/devolucion-responsable/` (RF06a) y `openspec/changes/devolucion-unica/` (RF06b) |
+| **Pruebas (pytest)** | `tests/test_prestamos.py` — 12 pruebas de registro, préstamo, devolución, disponibilidad, daño, portería, persistencia y los dos ciclos |
 | **Programa Python** | `prestatec/service.py` — `InventoryService`: `registrar_equipo`, `registrar_usuario`, `crear_prestamo`, `entregar`, `devolver`, `listar_equipos` |
 
-**Ciclo Spec → Test → Código verificable en el historial:**
+**Origen del núcleo:** `service.py` y `test_prestamos.py` provienen de una línea
+base previa documentada en `openspec/legacy/`, presentes desde el commit
+`8a92475`. El orden SDD/TDD se aplicó formalmente desde esa base, sin reescribir
+el historial. Los dos ciclos nuevos muestran el método sin ambigüedad:
+
+**Ciclo 1 — responsable de devolución (DEV):**
 
 | Paso | Commit | Etiqueta |
 |---|---|---|
-| Spec (antes de la prueba) | `a76091e` | `nucleo-1-spec` |
-| Prueba RED — 2 fallos, 77 en verde | `9fc38c1` | `nucleo-2-red` |
-| Código GREEN — 79 en verde | `9695bde` | `nucleo-3-green` |
+| Spec | `a76091e` | `nucleo-1-spec` |
+| Prueba RED — 2 fallos / 9 en verde en `test_prestamos.py` | `9fc38c1` | `nucleo-2-red` |
+| Código GREEN — 11 en verde en `test_prestamos.py` | `9695bde` | `nucleo-3-green` |
+
+**Ciclo 2 — devolución única (DUP):**
+
+| Paso | Commit |
+|---|---|
+| Spec | `131d82c` |
+| Prueba RED — 1 fallo / 11 en verde | `d002ae0` |
+| Código GREEN — 12 en verde | `6907506` |
+
+Etiqueta del ciclo 2: `devolucion-unica`. Etiqueta general del primer entregable: `nucleo`.
+
+**Nota de honestidad:** los commits del ciclo 1 se ejecutaron con un
+`identidades.json` local. En un clon limpio de esos commits, `test_ACC01...`
+fallaba por depender de ese archivo ignorado; se corrigió en `ca6aa0c`. Por eso
+la evidencia RED/GREEN del ciclo 1 se mide sobre `tests/test_prestamos.py`, no
+sobre la suite completa. El ciclo 2 nace después de la corrección: su RED es
+1 fallo / 79 en verde y su GREEN 80 en verde en clon limpio.
 
 ```powershell
-git log --oneline --decorate -4
-git show 9fc38c1    # la prueba todavía falla
-git show 9695bde    # la implementación que la hace pasar
+git log --oneline --decorate -9
+git show 9fc38c1 -- tests/test_prestamos.py
+git show 9695bde -- prestatec/service.py
+git show d002ae0 -- tests/test_prestamos.py
+git show 6907506 -- prestatec/service.py
 ```
-
-Etiqueta general del entregable: `nucleo`.
 
 ## Extras opcionales
 
@@ -92,14 +114,13 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **79 pruebas**: las 77 anteriores (dominio y HTTP, caracterización y cambios C1–C5, C12 y C13) más las 2 del ciclo `DEV-01`/`DEV-02` del núcleo. Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **80 pruebas**: las 77 de la línea base y cambios anteriores, más las 2 del ciclo `DEV` y la 1 del ciclo `DUP` del núcleo. Verificado en un clon limpio (sin `data.json` ni `identidades.json`): **80 passed**. La salida completa está en `documentacion/evidencia-pytest-clon-limpio.txt` y el informe histórico de C13 en `documentacion/Pruebas_PrestaTec_C13.docx` (77 pruebas en ese momento). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
-Para ver solo el ciclo Spec → Test → Código del núcleo:
+Para ver solo los dos ciclos Spec → Test → Código del núcleo:
 
 ```powershell
 py -m pytest tests/test_prestamos.py -v
 ```
-
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -129,7 +150,7 @@ Documentos de ejemplo:
 
 Además, esta instalación tiene tres usuarios de acceso rápido (C13): `admin`, `celador` y `estudiante`. El último está dado de alta como usuario de negocio para poder solicitar préstamos.
 
-**Decisión sobre datos:** `data.json` e `identidades.json` se mantienen fuera de Git (`.gitignore`) a propósito. `data.json` se regenera solo con equipos y usuarios de ejemplo, sin credenciales; los hashes PBKDF2 y sus salts viven en `identidades.json`. El ZIP `PrestaTec_2.0_entrega_20261124.zip`, incluido en la raíz del repositorio, trae ambos archivos ya poblados con los seis equipos, los cuatro usuarios base, los tres usuarios de acceso y sus credenciales: extráelo sobre la carpeta para arrancar con la demostración completa. Si prefieres recrear solo las credenciales:
+**Decisión sobre datos:** `data.json` e `identidades.json` se mantienen fuera de Git (`.gitignore`) a propósito. `data.json` se regenera solo con equipos y usuarios de ejemplo, sin credenciales; los hashes PBKDF2 y sus salts viven en `identidades.json`. **No hay ZIP dentro del repositorio**: para crear las tres cuentas de demostración basta ejecutar estos comandos (uno por cuenta):
 
 ```powershell
 $env:PRESTATEC_ADMIN_PASSWORD='admin123'
@@ -140,7 +161,7 @@ $env:PRESTATEC_ADMIN_PASSWORD='estudiante123'
 py identificar.py crear estudiante --rol Consulta
 ```
 
-`estudiante` también debe existir como usuario de negocio para poder reservar; se da de alta en **Usuarios** con documento `estudiante` (el ZIP ya lo incluye). Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`: eso borra préstamos y usuarios de prueba, pero no toca `identidades.json`.
+`estudiante` también debe existir como usuario de negocio para poder reservar; se da de alta en **Usuarios** con documento `estudiante`. Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`: eso borra préstamos y usuarios de prueba, pero no toca `identidades.json`.
 
 ### Persistencia opcional (SQLite)
 
@@ -175,7 +196,11 @@ py respaldar.py restaurar backups\data_....manifest.json data.json --confirmar
 
 ### Ingreso y permisos
 
-Toda ruta `/api/...` exige sesión. La pantalla de acceso muestra las tres cuentas de demostración y sus claves:
+Toda ruta `/api/...` exige sesión. La pantalla de acceso muestra las tres cuentas de demostración y sus claves.
+
+> **SOLO DEMOSTRACIÓN — no usar en producción.** Estas claves son públicas y
+> están aquí para que el sistema se pueda probar sin configuración previa.
+> Antes de desplegar, cámbialas o retíralas del texto y de la interfaz.
 
 | Usuario | Contraseña | Perfil | Vista inicial |
 |---|---|---|---|
@@ -227,16 +252,26 @@ La especificación está en `openspec/` y las pruebas están en `tests/`. El ord
 
 ## 7. Control de versiones
 
-El código está publicado en **https://github.com/jostinMorenoRJ/PrestaTec.git**, rama `main`. El historial completo empieza en el commit de línea base `8a92475 chore: linea base y gobernanza (C0)` y termina en el estado marcado con la etiqueta `nucleo`. Para verlo:
+El código está publicado en **https://github.com/jostinMorenoRJ/PrestaTec.git**, rama `main`. El historial empieza en `8a92475 chore: linea base y gobernanza (C0)` —que ya incluía `service.py` y `test_prestamos.py`— y continúa sin reescrituras. Etiquetas disponibles en el remoto:
+
+| Etiqueta | Qué marca |
+|---|---|
+| `nucleo-1-spec` / `nucleo-2-red` / `nucleo-3-green` | Pasos del ciclo 1 (DEV) |
+| `nucleo` | Estado del primer entregable |
+| `devolucion-unica` | Ciclo 2 (DUP), GREEN con 80 pruebas |
+
+Para verlo:
 
 ```powershell
 git log --oneline --decorate
 git status
-git show nucleo-2-red    # prueba antes del código
-git show nucleo-3-green  # código que la hace pasar
+git show nucleo-2-red       # prueba antes del código (ciclo 1)
+git show nucleo-3-green     # código que la hace pasar (ciclo 1)
+git show devolucion-unica   # segundo ciclo completo
 ```
 
-`.gitignore` excluye el entorno virtual, las cachés, `data.json`, `identidades.json` y la base SQLite local para no versionar datos ni credenciales. Las contraseñas de demostración aparecen en este README y en el informe Word; si el repositorio va a ser público, hazlo privado o retíralas antes de compartirlo.
+`.gitignore` excluye el entorno virtual, las cachés, `data.json`, `identidades.json` y la base SQLite local para no versionar datos ni credenciales. No se incluye ningún ZIP con copia del código. Las contraseñas de demostración aparecen en este README y en el informe Word, rotuladas como **solo demostración**; si el repositorio va a ser público, hazlo privado o retíralas antes de compartirlo.
+
 
 ## 8. Alcance y mejoras futuras
 

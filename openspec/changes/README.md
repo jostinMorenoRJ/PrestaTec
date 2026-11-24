@@ -21,11 +21,17 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 13 | `perfiles-y-experiencia` | C12 (adicional) | PER-01..PER-07; REFACTOR de defectos P3/P5/P6/P8/P9 | completado (`9eef23d`) |
 | 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`2be8cd9`) |
 | 15 | `devolucion-responsable` | Núcleo (RF06) | DEV-01..DEV-04; responsable de la devolución | completado (`a76091e` → `9fc38c1` → `9695bde`) |
+| 16 | `devolucion-unica` | Núcleo (RF06) | DUP-01..DUP-03; segunda devolución rechazada | completado (`131d82c` → `d002ae0` → `6907506`) |
 
-**Estado:** C0–C5, C12, C13 y el change del núcleo `devolucion-responsable`
-completados con evidencia RED → GREEN → REFACTOR en `openspec/ejecucion-c0.md`
-… `ejecucion-c5.md`, `ejecucion-c12.md`, `ejecucion-c13.md` y
-`ejecucion-nucleo-dev.md`. C6–C11 permanecen pendientes y requieren
-autorización/decisiones institucionales según cada proposal. C12, C13 y este
-change no sustituyen a esos changes: corrigen defectos documentados y aplican
-decisiones del usuario sobre perfiles, acceso local y trazabilidad del núcleo.
+**Estado:** C0–C5, C12, C13 y los dos changes del núcleo
+(`devolucion-responsable` y `devolucion-unica`) completados con evidencia
+RED → GREEN → REFACTOR en `openspec/ejecucion-c0.md` … `ejecucion-c5.md`,
+`ejecucion-c12.md`, `ejecucion-c13.md`, `ejecucion-nucleo-dev.md` y
+`ejecucion-devolucion-unica.md`. El núcleo (`service.py` y
+`test_prestamos.py`) proviene de la línea base `8a92475`, documentada en
+`openspec/legacy/`; los dos cambios anter son los ciclos formales aplicados
+desde ahí, sin reescritura del historial. C6–C11 permanecen pendientes y
+requieren autorización/decisiones institucionales según cada proposal. C12,
+C13 y estos dos changes no sustituyen a esos changes: corrigen defectos
+documentados y aplican decisiones del usuario sobre perfiles, acceso local y
+trazabilidad del núcleo.
