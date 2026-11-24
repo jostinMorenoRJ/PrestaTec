@@ -1,12 +1,16 @@
 """Migración explícita de `data.json` a SQLite.
 
-Uso: `py migrar.py [origen] [destino] [respaldo] [--forzar]`.
+Uso: `py scripts/migrar.py [origen] [destino] [respaldo] [--forzar]`.
 Sin argumentos usa `data.json`, `prestatec.db` y `data.json.bak`.
 Nunca sobrescribe archivos existentes sin `--forzar`.
 """
 import argparse
 import json
 import sys
+from pathlib import Path
+
+# Al invocar `python scripts/migrar.py`, sys.path[0] es scripts/, no la raíz.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from prestatec.errors import BusinessError
 from prestatec.migracion import migrar_desde_json

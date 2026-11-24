@@ -1,8 +1,8 @@
 """Operaciones explícitas de respaldo y restauración.
 
 Uso:
-    py respaldar.py crear data.json [--directorio backups]
-    py respaldar.py restaurar <manifiesto.json> <destino> [--confirmar]
+    py scripts/respaldar.py crear data.json [--directorio backups]
+    py scripts/respaldar.py restaurar <manifiesto.json> <destino> [--confirmar]
 
 La opción `--confirmar` sustituye la confirmación institucional mientras no
 exista una interfaz de aprobación; queda registrada en la evidencia del change.
@@ -10,6 +10,10 @@ exista una interfaz de aprobación; queda registrada en la evidencia del change.
 import argparse
 import json
 import sys
+from pathlib import Path
+
+# Al invocar `python scripts/respaldar.py`, sys.path[0] es scripts/, no la raíz.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from prestatec.backup import BackupService
 from prestatec.errors import BusinessError
