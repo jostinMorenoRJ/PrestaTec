@@ -39,18 +39,19 @@ def test_api_ciclo_prestamo_devolucion(tmp_path):
         tmp_path / 'db.json', seed=False,
         identidad_file=tmp_path / 'identidades.json',
     )
-    headers = autenticar(app)
+    headers = autenticar(app)  # Encargado: registra usuarios y equipos
     call(app, 'POST', '/api/usuarios', {
         'nombre': 'Daniel Rojas', 'documento': '12345', 'rol': 'Estudiante',
     }, headers)
     equipo = call(app, 'POST', '/api/equipos', {
         'tipo': 'Proyector', 'nombre': 'Epson', 'ubicacion': 'Sala 1',
     }, headers)[1]
+    consulta = autenticar(app, '12345', 'clave-consulta', 'Consulta')
     inicio = (datetime.now() - timedelta(minutes=1)).isoformat()
     fin = (datetime.now() + timedelta(hours=1)).isoformat()
     reserva = call(app, 'POST', '/api/reservas', {
         'equipoId': equipo['id'], 'documento': '12345', 'inicio': inicio, 'fin': fin,
-    }, headers)[1]
+    }, consulta)[1]
     assert call(app, 'POST', f"/api/reservas/{reserva['id']}/entregar", {
         'responsable': 'Auxiliar',
     }, headers)[0] == 200

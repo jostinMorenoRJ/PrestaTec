@@ -15,7 +15,8 @@
   <header class="topbar">
     <a class="brand" href="#inicio" aria-label="PrestaTec inicio"><span class="brand-mark">P</span><span>Presta<span class="brand-accent">Tec</span><small>GESTIÓN DE EQUIPOS</small></span></a>
     <nav aria-label="Navegación principal">
-      <button class="on" data-v="panel">Resumen</button>
+      <button class="on" data-v="mis" hidden>Mis préstamos</button>
+      <button data-v="panel">Resumen</button>
       <button data-v="equipos">Inventario</button>
       <button data-v="reservas">Préstamos</button>
       <button data-v="porteria">Portería</button>
@@ -41,7 +42,8 @@
       <div class="welcome-art" aria-hidden="true"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="device laptop"><div class="screen"><div class="screen-bar"></div><div class="screen-lines"></div><div class="screen-dot"></div></div><div class="keyboard"></div></div><div class="device projector"><div class="lens"></div><div class="projector-light"></div></div><div class="art-label">CONTROL<br>EN TIEMPO REAL</div></div>
       <div class="welcome-foot"><span><b>01</b> INVENTARIO</span><span><b>02</b> TRAZABILIDAD</span><span><b>03</b> SEGURIDAD</span></div>
     </section>
-    <div class="section-heading"><div><div class="eyebrow">CENTRO DE CONTROL</div><h2>Panel general</h2></div><div class="live"><span></span> Datos actualizados al consultar</div></div>
+    <div class="section-heading"><div><div class="eyebrow">CENTRO DE CONTROL</div><h2 id="titulo-vista">Panel general</h2></div><div class="live"><span></span> Datos actualizados al consultar</div></div>
+    <section id="v-mis" class="view" hidden></section>
     <section id="v-panel" class="view"></section>
     <section id="v-equipos" class="view" hidden></section>
     <section id="v-reservas" class="view" hidden></section>

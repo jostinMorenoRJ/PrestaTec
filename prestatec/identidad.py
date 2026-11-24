@@ -20,27 +20,43 @@ from .errors import BusinessError
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Los roles históricos del sistema no desaparecen: se traducen a la matriz
-# aprobada. Estudiante y Docente pasan a Consulta.
+# C12: solo tres roles operativos. Los alias históricos Estudiante/Docente se
+# traducen a Consulta; Administrador y Soporte dejan de ser válidos.
+ROLES_PERMITIDOS = ('Consulta', 'Guarda', 'Encargado')
 ROLES_LEGACY = {
     'Estudiante': 'Consulta',
     'Docente': 'Consulta',
-    'Encargado': 'Encargado',
-    'Guarda': 'Guarda',
-    'Soporte': 'Soporte',
-    'Administrador': 'Administrador',
     'Consulta': 'Consulta',
+    'Guarda': 'Guarda',
+    'Encargado': 'Encargado',
+}
+VISTAS_INICIALES = {
+    'Consulta': 'mis',
+    'Guarda': 'porteria',
+    'Encargado': 'gestion',
 }
 
 MATRIZ = {
-    'VERIFICAR_PORTERIA': {'Guarda', 'Encargado', 'Administrador'},
-    'ENTREGAR_DEVOLVER': {'Guarda', 'Encargado', 'Administrador'},
-    'CREAR_RECURSO': {'Administrador'},
-    'REGISTRAR_DANO': {'Encargado', 'Soporte', 'Administrador'},
-    'HABILITAR': {'Encargado', 'Soporte', 'Administrador'},
-    'EXPORTAR': {'Encargado', 'Administrador', 'Consulta'},
-    'CONSULTAR_HISTORIAL': {'Encargado', 'Soporte', 'Administrador', 'Consulta'},
+    'SOLICITAR_PRESTAMO': {'Consulta'},
+    'VERIFICAR_PORTERIA': {'Guarda', 'Encargado'},
+    'ENTREGAR_DEVOLVER': {'Guarda', 'Encargado'},
+    'CREAR_RECURSO': {'Encargado'},
+    'REGISTRAR_DANO': {'Encargado'},
+    'HABILITAR': {'Encargado'},
+    'EXPORTAR': {'Encargado', 'Consulta'},
+    'CONSULTAR_HISTORIAL': {'Encargado', 'Consulta'},
+    'VER_RESUMEN': {'Guarda', 'Encargado'},
+    'VER_USUARIOS': {'Encargado'},
 }
+
+
+def normalizar_rol(rol):
+    """Devuelve el rol permitido o `None` si no pertenece a la matriz C12."""
+    texto = str(rol or '').strip()
+    if not texto:
+        return None
+    return ROLES_LEGACY.get(texto, texto if texto in ROLES_PERMITIDOS else None)
+
 
 
 class NoAutenticado(BusinessError):
@@ -112,6 +128,11 @@ class AlmacenCredenciales:
         documento, contraseña = str(documento or '').strip(), str(contraseña or '')
         if not documento or not contraseña:
             raise BusinessError('Documento y contraseña son obligatorios.')
+        rol = normalizar_rol(rol)
+        if rol is None:
+            raise BusinessError(
+                f'Rol no válido. Roles permitidos: {", ".join(ROLES_PERMITIDOS)}.'
+            )
         datos = self._leer()
         if documento in datos['credenciales']:
             raise BusinessError(f'Ya existe una credencial para: {documento}.')
@@ -123,7 +144,7 @@ class AlmacenCredenciales:
             'salt': sal.hex(),
             'hash': digesto.hex(),
             'iteraciones': self.iteraciones,
-            'rol': ROLES_LEGACY.get(rol, rol) if rol else None,
+            'rol': rol,
         }
         self._guardar(datos)
         return documento
@@ -152,10 +173,25 @@ class ProveedorIdentidadLocal:
         self.secreto = secreto or os.getenv('PRESTATEC_SESSION_SECRET') or secrets.token_hex(32)
 
     def crear_credencial(self, documento, contraseña, rol=None):
+        if rol is None:
+            # C5: si no se da rol explícito se toma del usuario de negocio (PER-01).
+            documento_texto = str(documento or '').strip()
+            usuario = next(
+                (u for u in self.servicio.listar_usuarios()
+                 if u['documento'] == documento_texto), None
+            )
+            if usuario is None:
+                raise BusinessError(
+                    'Rol obligatorio si el documento no está registrado. '
+                    f'Roles permitidos: {", ".join(ROLES_PERMITIDOS)}.'
+                )
+            rol = usuario['rol']
         return self.almacen.crear(documento, contraseña, rol)
 
     def autenticar(self, documento, contraseña):
         if not self.almacen.verificar(documento, contraseña):
+            return None
+        if self.identidad(documento) is None:
             return None
         return self._emitir(str(documento).strip())
 
@@ -173,18 +209,18 @@ class ProveedorIdentidadLocal:
         usuario = next(
             (u for u in self.servicio.listar_usuarios() if u['documento'] == documento), None
         )
-        rol = self.almacen.rol(documento)
+        rol = normalizar_rol(self.almacen.rol(documento))
         if rol:
             return Identidad(
                 usuario['id'] if usuario else f'ID-{documento}',
                 usuario['nombre'] if usuario else documento,
-                ROLES_LEGACY.get(rol, rol), documento,
+                rol, documento,
             )
+        if self.almacen.rol(documento):
+            return None  # credencial con rol eliminado: no resuelve identidad
         if usuario:
-            return Identidad(
-                usuario['id'], usuario['nombre'],
-                ROLES_LEGACY.get(usuario['rol'], 'Consulta'), documento,
-            )
+            rol = normalizar_rol(usuario['rol']) or 'Consulta'
+            return Identidad(usuario['id'], usuario['nombre'], rol, documento)
         return None
 
     def _emitir(self, documento):

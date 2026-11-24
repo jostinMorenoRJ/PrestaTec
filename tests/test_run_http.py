@@ -34,7 +34,7 @@ def test_servidor_envia_cookie_y_acepta_sesion(tmp_path):
         tmp_path / 'db.json', seed=False,
         identidad_file=tmp_path / 'identidades.json',
     )
-    app.identidad.crear_credencial('admin', 'clave', 'Administrador')
+    app.identidad.crear_credencial('gestor', 'clave', 'Encargado')
     servidor = ThreadingHTTPServer(('127.0.0.1', 0), crear_handler(app))
     hilo = threading.Thread(target=servidor.serve_forever, daemon=True)
     hilo.start()
@@ -42,7 +42,7 @@ def test_servidor_envia_cookie_y_acepta_sesion(tmp_path):
     try:
         estado, _cuerpo, headers = _peticion(
             base, '/api/auth/login', 'POST',
-            {'documento': 'admin', 'contraseña': 'clave'},
+            {'documento': 'gestor', 'contraseña': 'clave'},
         )
         assert estado == 200
         cookie = _cabecera(headers, 'Set-Cookie')

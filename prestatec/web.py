@@ -7,9 +7,10 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
 from .config import Configuracion
-from .errors import BusinessError
+from .errors import BusinessError, ConflictoReserva
 from .identidad import (
     Autorizador, NoAutenticado, ProveedorIdentidadLocal, SinPermiso,
+    VISTAS_INICIALES,
 )
 from .service import InventoryService
 
@@ -67,8 +68,10 @@ class PrestaTecApp:
                 return self._json({
                     'id': actor.id, 'nombre': actor.nombre, 'rol': actor.rol,
                     'documento': actor.documento, 'permisos': permisos,
+                    'vistaInicial': VISTAS_INICIALES.get(actor.rol, 'mis'),
                 })
             if method == 'GET' and path == '/api/resumen':
+                self.autorizador.exigir(actor, 'VER_RESUMEN')
                 return self._json(s.resumen())
             if method == 'GET' and path == '/api/equipos':
                 return self._json(s.listar_equipos())
@@ -89,6 +92,7 @@ class PrestaTecApp:
                 self.autorizador.exigir(actor, 'CONSULTAR_HISTORIAL')
                 return self._json(s.historial_equipo(m.group(1)))
             if method == 'GET' and path == '/api/usuarios':
+                self.autorizador.exigir(actor, 'VER_USUARIOS')
                 return self._json(s.listar_usuarios())
             if method == 'POST' and path == '/api/usuarios':
                 self.autorizador.exigir(actor, 'CREAR_RECURSO')
@@ -101,11 +105,24 @@ class PrestaTecApp:
                 return self._json(s.disponibilidad(
                     q.get('tipo', ['Portátil'])[0], q['inicio'][0], q['fin'][0]
                 ))
+            if method == 'GET' and path == '/api/mis-prestamos':
+                self.autorizador.exigir(actor, 'SOLICITAR_PRESTAMO')
+                return self._json([
+                    p for p in s.listar_prestamos()
+                    if p.get('documento') == actor.documento
+                ])
             if method == 'GET' and path == '/api/reservas':
+                self.autorizador.exigir(actor, 'ENTREGAR_DEVOLVER')
                 return self._json(s.listar_prestamos())
             if method == 'POST' and path == '/api/reservas':
+                self.autorizador.exigir(actor, 'SOLICITAR_PRESTAMO')
+                documento = str(body.get('documento') or '').strip()
+                if documento != str(actor.documento or '').strip():
+                    raise SinPermiso(
+                        'Solo puede solicitar préstamos para su propio documento.'
+                    )
                 return self._json(s.crear_prestamo(
-                    body.get('equipoId'), body.get('documento'),
+                    body.get('equipoId'), documento,
                     body.get('inicio'), body.get('fin'), actor=actor,
                 ))
             m = re.fullmatch(r'/api/reservas/([^/]+)/(entregar|devolver|cancelar|noshow)', path)
@@ -142,7 +159,7 @@ class PrestaTecApp:
                 ])
                 for p in s.listar_prestamos():
                     writer.writerow([
-                        p['id'], p['equipoId'], p['usuario'], p['inicio'], p['fin'],
+                        p['id'], p['equipo'], p['usuario'], p['inicio'], p['fin'],
                         p['estado'], p['entregadoEn'], p['devueltoEn'],
                         p['responsable'], p['nota'],
                     ])
@@ -161,6 +178,10 @@ class PrestaTecApp:
             return self._json({'mensaje': str(error)}, 401)
         except SinPermiso as error:
             return self._json({'mensaje': str(error)}, 403)
+        except ConflictoReserva as error:
+            return self._json({
+                'mensaje': str(error), 'alternativas': error.alternativas,
+            }, 409)
         except BusinessError as error:
             return self._json({'mensaje': str(error)}, 400)
         except (KeyError, TypeError, ValueError) as error:

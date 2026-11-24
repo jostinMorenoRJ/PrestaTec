@@ -11,8 +11,8 @@ from prestatec.identidad import Identidad, SinPermiso
 from prestatec.service import InventoryService
 
 
-def identidad(identificador, nombre, rol):
-    return Identidad(identificador, nombre, rol, identificador)
+def identidad(identificador, nombre, rol, documento=None):
+    return Identidad(identificador, nombre, rol, documento or identificador)
 
 
 def test_caso_uso_rechaza_registro_de_usuario_sin_permiso(tmp_path):
@@ -25,16 +25,17 @@ def test_caso_uso_rechaza_registro_de_usuario_sin_permiso(tmp_path):
     assert servicio.listar_usuarios() == []
 
 
-def test_caso_uso_admin_registra_y_encargado_entrega(tmp_path):
+def test_caso_uso_encargado_registra_y_entrega(tmp_path):
     servicio = InventoryService(tmp_path / 'db.json', seed=False)
-    admin = identidad('ID-A', 'Administrador', 'Administrador')
+    gestor = identidad('ID-A', 'Gestor', 'Encargado')
+    consulta = identidad('ID-C', 'Ana Torres', 'Consulta', '1002')
     encargado = identidad('ID-E', 'Laura Gómez', 'Encargado')
 
-    servicio.registrar_usuario('Laura Gómez', '1002', 'Encargado', actor=admin)
-    equipo = servicio.registrar_equipo('Portátil', 'ThinkPad', actor=admin)
+    servicio.registrar_usuario('Laura Gómez', '1002', 'Encargado', actor=gestor)
+    equipo = servicio.registrar_equipo('Portátil', 'ThinkPad', actor=gestor)
     inicio = (datetime.now() - timedelta(minutes=1)).isoformat()
     fin = (datetime.now() + timedelta(hours=1)).isoformat()
-    reserva = servicio.crear_prestamo(equipo['id'], '1002', inicio, fin, actor=admin)
+    reserva = servicio.crear_prestamo(equipo['id'], '1002', inicio, fin, actor=consulta)
 
     entregado = servicio.entregar(reserva['id'], 'Auxiliar', actor=encargado)
     assert entregado['actorId'] == 'ID-E'
@@ -47,9 +48,9 @@ def test_caso_uso_admin_registra_y_encargado_entrega(tmp_path):
 
 def test_caso_uso_guarda_no_cambia_estado(tmp_path):
     servicio = InventoryService(tmp_path / 'db.json', seed=False)
-    admin = identidad('ID-A', 'Administrador', 'Administrador')
+    gestor = identidad('ID-A', 'Gestor', 'Encargado')
     guarda = identidad('ID-G', 'Guarda Uno', 'Guarda')
-    equipo = servicio.registrar_equipo('Portátil', 'ThinkPad', actor=admin)
+    equipo = servicio.registrar_equipo('Portátil', 'ThinkPad', actor=gestor)
 
     with pytest.raises(SinPermiso, match='REGISTRAR_DANO'):
         servicio.cambiar_estado(

@@ -39,19 +39,56 @@ class JsonFileRepository:
         )
         self.data_file.parent.mkdir(parents=True, exist_ok=True)
 
+    @staticmethod
+    def _identidad(item, clave):
+        if clave == 'eventos':
+            return (item.get('fecha'), item.get('texto'))
+        return item.get('id')
+
     def load(self) -> dict:
         if self.data_file.exists():
             try:
-                data = json.loads(self.data_file.read_text(encoding='utf-8'))
-                # Compatibilidad con el JSON PascalCase del proyecto C# original.
-                if 'Equipos' in data:
-                    data = {
-                        'equipos': [{'id': x.get('Id', ''), 'tipo': x.get('Tipo', 'Portátil'), 'nombre': x.get('Nombre', ''), 'ubicacion': x.get('Ubicacion', ''), 'estado': x.get('Estado', 'Disponible')} for x in data.get('Equipos', [])],
-                        'usuarios': [{'id': x.get('Id', ''), 'nombre': x.get('Nombre', ''), 'documento': x.get('Documento', ''), 'rol': x.get('Rol', 'Estudiante')} for x in data.get('Usuarios', [])],
-                        'prestamos': [{'id': x.get('Id', ''), 'equipoId': x.get('EquipoId', ''), 'usuarioId': x.get('UsuarioId', ''), 'inicio': x.get('Inicio'), 'fin': x.get('Fin'), 'estado': x.get('Estado', 'Confirmada'), 'entregadoEn': x.get('EntregadoEn'), 'devueltoEn': x.get('DevueltoEn'), 'responsable': x.get('Responsable'), 'nota': x.get('Nota') or ''} for x in data.get('Reservas', [])],
-                        'eventos': [{'fecha': x.get('Fecha'), 'equipoId': x.get('EquipoId', ''), 'texto': x.get('Texto', '')} for x in data.get('Eventos', [])],
-                    }
-                return {**estado_vacio(), **data}
+                datos = json.loads(self.data_file.read_text(encoding='utf-8'))
+                resultado = {**estado_vacio(), **datos}
+                conversiones = {
+                    'Equipos': ('equipos', lambda x: {
+                        **x, 'id': x.get('Id', ''), 'tipo': x.get('Tipo', 'Portátil'),
+                        'nombre': x.get('Nombre', ''),
+                        'ubicacion': x.get('Ubicacion', ''),
+                        'estado': x.get('Estado', 'Disponible'),
+                    }),
+                    'Usuarios': ('usuarios', lambda x: {
+                        **x, 'id': x.get('Id', ''), 'nombre': x.get('Nombre', ''),
+                        'documento': x.get('Documento', ''),
+                        'rol': x.get('Rol', 'Estudiante'),
+                    }),
+                    'Reservas': ('prestamos', lambda x: {
+                        **x, 'id': x.get('Id', ''), 'equipoId': x.get('EquipoId', ''),
+                        'usuarioId': x.get('UsuarioId', ''), 'inicio': x.get('Inicio'),
+                        'fin': x.get('Fin'), 'estado': x.get('Estado', 'Confirmada'),
+                        'entregadoEn': x.get('EntregadoEn'),
+                        'devueltoEn': x.get('DevueltoEn'),
+                        'responsable': x.get('Responsable'),
+                        'nota': x.get('Nota') or '',
+                    }),
+                    'Eventos': ('eventos', lambda x: {
+                        **x, 'fecha': x.get('Fecha'), 'equipoId': x.get('EquipoId', ''),
+                        'texto': x.get('Texto', ''),
+                    }),
+                }
+                for legado, (clave, normalizar) in conversiones.items():
+                    if legado not in datos:
+                        continue
+                    convertidos = [
+                        normalizar(x) for x in (datos[legado] or []) if isinstance(x, dict)
+                    ]
+                    vistos = {self._identidad(x, clave) for x in convertidos}
+                    actuales = resultado.get(clave) or []
+                    if isinstance(actuales, list):
+                        resultado[clave] = convertidos + [
+                            x for x in actuales if self._identidad(x, clave) not in vistos
+                        ]
+                return resultado
             except (OSError, json.JSONDecodeError) as error:
                 raise BusinessError('No fue posible leer datos.json.') from error
         return estado_vacio()

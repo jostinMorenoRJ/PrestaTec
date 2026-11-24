@@ -64,33 +64,38 @@ def test_RNF01_guarda_no_registra_usuarios(tmp_path):
 
 
 def test_RNF01_encargado_entrega_y_devuelve_asociado_a_identidad(tmp_path):
+    """C12: el solicitante es Consulta; la entrega la firma un Encargado."""
     app = crear_app(tmp_path)
-    crear_credencial(app, 'admin', 'clave-admin', 'Administrador')
-    admin = cabeceras(login(app, 'admin', 'clave-admin'))
+    crear_credencial(app, 'gestor', 'clave-gestor', 'Encargado')
+    gestor = cabeceras(login(app, 'gestor', 'clave-gestor'))
 
     llamar(app, 'POST', '/api/usuarios', {
-        'nombre': 'Laura Gómez', 'documento': '1002', 'rol': 'Encargado',
-    }, admin)
+        'nombre': 'Ana Torres', 'documento': '1002', 'rol': 'Estudiante',
+    }, gestor)
     equipo = llamar(app, 'POST', '/api/equipos', {
         'tipo': 'Portátil', 'nombre': 'ThinkPad', 'ubicacion': 'Biblioteca',
-    }, admin)[1]
+    }, gestor)[1]
+
+    crear_credencial(app, '1002', 'clave-consulta', 'Consulta')
+    consulta = cabeceras(login(app, '1002', 'clave-consulta'))
     from datetime import datetime, timedelta
     inicio = (datetime.now() - timedelta(minutes=1)).isoformat()
     fin = (datetime.now() + timedelta(hours=1)).isoformat()
     reserva = llamar(app, 'POST', '/api/reservas', {
         'equipoId': equipo['id'], 'documento': '1002', 'inicio': inicio, 'fin': fin,
-    }, admin)[1]
+    }, consulta)[1]
 
-    crear_credencial(app, '1002', 'clave-encargado')  # rol tomado del usuario de negocio
-    encargado = cabeceras(login(app, '1002', 'clave-encargado'))
+    crear_credencial(app, 'laura', 'clave-encargado', 'Encargado')
+    encargado = cabeceras(login(app, 'laura', 'clave-encargado'))
+    actor = app.identidad.resolver(encargado)
     estado, entregado = llamar(
         app, 'POST', f"/api/reservas/{reserva['id']}/entregar",
         {'responsable': 'Auxiliar'}, encargado,
     )
     assert estado == 200
     prestamo = next(p for p in app.service.data['prestamos'] if p['id'] == reserva['id'])
-    assert prestamo['actorId'] == app.service.listar_usuarios()[0]['id']
-    assert 'Laura Gómez' in ' '.join(
+    assert prestamo['actorId'] == actor.id == entregado['actorId']
+    assert actor.nombre in ' '.join(
         evento['texto'] for evento in app.service.historial_equipo(equipo['id'])
     )
 
@@ -103,10 +108,10 @@ def test_RNF01_encargado_entrega_y_devuelve_asociado_a_identidad(tmp_path):
 
 def test_RNF01_sin_secretos_en_repositorio(tmp_path):
     app = crear_app(tmp_path)
-    crear_credencial(app, 'admin', 'clave-super-secreta', 'Administrador')
+    crear_credencial(app, 'gestor', 'clave-super-secreta', 'Encargado')
 
     identidades = json.loads((tmp_path / 'identidades.json').read_text(encoding='utf-8'))
-    credencial = identidades['credenciales']['admin']
+    credencial = identidades['credenciales']['gestor']
     assert 'clave-super-secreta' not in (tmp_path / 'identidades.json').read_text(encoding='utf-8')
     repositorio = tmp_path / 'db.json'
     contenido_repo = repositorio.read_text(encoding='utf-8') if repositorio.exists() else ''
@@ -141,12 +146,13 @@ def test_RNF01_perfil_de_sesion_expone_permisos(tmp_path):
     app = crear_app(tmp_path)
     assert llamar(app, 'GET', '/api/auth/me')[0] == 401
 
-    crear_credencial(app, 'admin-perfil', 'clave-perfil', 'Administrador')
-    headers = cabeceras(login(app, 'admin-perfil', 'clave-perfil'))
+    crear_credencial(app, 'gestor-perfil', 'clave-perfil', 'Encargado')
+    headers = cabeceras(login(app, 'gestor-perfil', 'clave-perfil'))
     estado, perfil = llamar(app, 'GET', '/api/auth/me', headers=headers)
 
     assert estado == 200
-    assert perfil['rol'] == 'Administrador'
+    assert perfil['rol'] == 'Encargado'
+    assert perfil['vistaInicial'] == 'gestion'
     assert 'CREAR_RECURSO' in perfil['permisos']
     assert 'CONSULTAR_HISTORIAL' in perfil['permisos']
     assert 'contraseña' not in perfil
@@ -155,18 +161,18 @@ def test_RNF01_perfil_de_sesion_expone_permisos(tmp_path):
 def test_RNF01_rol_explicito_de_credencial_prevalece_sobre_rol_historico(tmp_path):
     app = crear_app(tmp_path)
     app.service.registrar_usuario('Ana Torres', '1004', 'Estudiante')
-    crear_credencial(app, '1004', 'clave-admin', 'Administrador')
+    crear_credencial(app, '1004', 'clave-gestion', 'Encargado')
 
-    headers = cabeceras(login(app, '1004', 'clave-admin'))
+    headers = cabeceras(login(app, '1004', 'clave-gestion'))
     estado, perfil = llamar(app, 'GET', '/api/auth/me', headers=headers)
 
     assert estado == 200
-    assert perfil['rol'] == 'Administrador'
+    assert perfil['rol'] == 'Encargado'
 
 
 def test_RNF01_token_invalido_recibe_401(tmp_path):
     app = crear_app(tmp_path)
-    crear_credencial(app, 'admin-token', 'clave-token', 'Administrador')
+    crear_credencial(app, 'gestor-token', 'clave-token', 'Encargado')
 
     estado, cuerpo = llamar(
         app, 'GET', '/api/equipos',
@@ -179,11 +185,11 @@ def test_RNF01_token_invalido_recibe_401(tmp_path):
 
 def test_RNF01_permisos_de_reporte_y_historial(tmp_path):
     app = crear_app(tmp_path)
-    crear_credencial(app, 'admin', 'clave-admin', 'Administrador')
-    admin = cabeceras(login(app, 'admin', 'clave-admin'))
+    crear_credencial(app, 'gestor', 'clave-gestor', 'Encargado')
+    gestor = cabeceras(login(app, 'gestor', 'clave-gestor'))
     llamar(app, 'POST', '/api/usuarios', {
         'nombre': 'Usuario Consulta', 'documento': '1003', 'rol': 'Docente',
-    }, admin)
+    }, gestor)
     crear_credencial(app, '1003', 'clave-consulta')
     consulta = cabeceras(login(app, '1003', 'clave-consulta'))
     crear_credencial(app, 'guarda2', 'clave-guardia', 'Guarda')

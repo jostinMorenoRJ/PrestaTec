@@ -58,7 +58,7 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **57 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 38 de los cambios C1–C5 (repositorio, reloj, persistencia, configuración, migración, respaldo, restauración, identidad y RBAC). Las de caracterización documentan el comportamiento actual, incluidos defectos conocidos; la de acceso anónimo se actualizó en C5 porque la nueva spec exige autenticación. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **72 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 53 de los cambios C1–C5 y C12 (repositorio, reloj, persistencia, configuración, migración, respaldo, restauración, identidad, RBAC, perfiles y experiencia). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -121,36 +121,40 @@ py respaldar.py restaurar backups\data_....manifest.json data.json --confirmar
 
 ### Ingreso y permisos
 
-Toda ruta `/api/...` exige sesión. Antes del primer ingreso crea una credencial:
+Toda ruta `/api/...` exige sesión. Antes del primer ingreso crea una credencial con uno de los tres perfiles vigentes:
 
 ```powershell
-py identificar.py crear admin --rol Administrador
+py identificar.py crear 52111222 --rol Encargado
+py identificar.py crear 1001234567 --rol Consulta
+py identificar.py crear guarda-1 --rol Guarda
 ```
 
-La contraseña se solicita por consola (o desde `PRESTATEC_ADMIN_PASSWORD` solo en automatización). Se guarda como hash PBKDF2 con salt en `identidades.json`, archivo ignorado por Git; nunca aparece en `data.json`.
+La contraseña se solicita por consola (o desde `PRESTATEC_ADMIN_PASSWORD` solo en automatización). Se guarda como hash PBKDF2 con salt en `identidades.json`, archivo ignorado por Git; nunca aparece en `data.json`. Los roles `Administrador` y `Soporte` fueron eliminados en C12: se rechazan al crear credenciales y una credencial heredada con esos roles deja de iniciar sesión. Los archivos existentes no se borran.
 
-En la barra superior escribe el documento y la contraseña. La interfaz muestra solo las acciones permitidas para el rol:
+En la barra superior escribe el documento y la contraseña. Cada perfil entra en su propia vista (`mis`, `porteria` o `gestion`) y solo ve su navegación:
 
-| Acción | Guarda | Encargado | Soporte | Administrador | Consulta |
-|---|---|---|---|---|---|
-| Verificar en portería | Sí | Sí | No | Sí | No |
-| Entregar / devolver | Sí | Sí | No | Sí | No |
-| Crear equipo / usuario | No | No | No | Sí | No |
-| Registrar daño / mantenimiento | No | Sí | Sí | Sí | No |
-| Habilitar reincorporación | No | Sí | Sí | Sí | No |
-| Exportar reportes | No | Sí | No | Sí | Sí |
-| Consultar historial | No | Sí | Sí | Sí | Sí |
+| Acción | Consulta | Guarda | Encargado |
+|---|---|---|---|
+| Solicitar préstamo (solo para su documento) | Sí | No | No |
+| Verificar en portería | No | Sí | Sí |
+| Entregar / devolver | No | Sí | Sí |
+| Crear equipo / usuario | No | No | Sí |
+| Registrar daño / mantenimiento | No | No | Sí |
+| Habilitar reincorporación | No | No | Sí |
+| Exportar reportes | Sí | No | Sí |
+| Consultar historial | Sí | No | Sí |
+| Ver resumen | No | Sí | Sí |
+| Ver usuarios | No | No | Sí |
 
 Los roles históricos `Estudiante` y `Docente` se tratan como `Consulta`. La matriz es una aprobación técnica temporal; se cambia en `prestatec/identidad.py` si la universidad define otra. Para SSO institucional se sustituye el proveedor al construir `PrestaTecApp`, sin tocar las reglas de negocio.
 
-## 5. Módulos de la interfaz
+## 5. Módulos de la interfaz por perfil
 
-- **Resumen:** indicadores de inventario, atrasos y próximas reservas.
-- **Inventario:** registrar equipos, cambiar su estado, imprimir etiqueta QR y consultar historial.
-- **Préstamos:** reservar por fecha/hora, registrar entrega, devolución, cancelación o no presentación.
-- **Portería:** verificar un código de equipo o documento de estudiante. También se puede usar un lector QR que escriba el código como teclado.
-- **Usuarios:** registrar estudiantes, docentes y personal.
-- **Reporte:** descargar el historial de préstamos en CSV.
+- **Consulta — Mis préstamos:** indicadores personales, búsqueda de equipos libres mediante `/api/disponibilidad`, solicitud para su propio documento (con alternativas ante conflictos) e historial de sus equipos.
+- **Guarda — Portería:** validación rápida por QR o cédula, resultado con audio y registro de las últimas lecturas. También accede a Préstamos para entregar y recibir.
+- **Encargado — Gestión:** resumen, inventario (alta, estado, QR e historial), préstamos (entrega, devolución, cancelación), portería y usuarios, además del reporte CSV.
+
+La interfaz muestra estados vacíos, mensajes de éxito/error, indicación de carga, foco visible y diseño adaptable a móvil. Todas las acciones visibles tienen controlador; la navegación se filtra según el perfil devuelto por `/api/auth/me`.
 
 ## 6. Metodología solicitada
 

@@ -8,7 +8,7 @@ from functools import wraps
 from threading import RLock
 from uuid import uuid4
 
-from .errors import BusinessError
+from .errors import BusinessError, ConflictoReserva
 from .identidad import Autorizador
 from .politicas import Politicas
 from .reloj import Reloj, a_utc
@@ -80,6 +80,7 @@ class InventoryService:
 
     @_transaccional
     def crear_prestamo(self, equipo_id, documento, inicio, fin, actor=None):
+        self._exigir(actor, 'SOLICITAR_PRESTAMO')
         inicio,fin=a_utc(inicio),a_utc(fin)
         if fin<=inicio: raise BusinessError('La fecha de fin debe ser posterior al inicio.')
         e=next((x for x in self.data['equipos'] if x['id']==equipo_id),None)
@@ -87,7 +88,11 @@ class InventoryService:
         if e['estado']!='Disponible': raise BusinessError(f"El equipo está en '{e['estado']}' y no se puede reservar.")
         u=next((x for x in self.data['usuarios'] if x['documento']==str(documento).strip()),None)
         if not u: raise BusinessError('Solo usuarios autorizados por la universidad pueden pedir préstamos.')
-        if self._choque(equipo_id,inicio,fin): raise BusinessError('El equipo ya está ocupado por una reserva o préstamo en ese horario.')
+        if self._choque(equipo_id,inicio,fin):
+            raise ConflictoReserva(
+                'El equipo ya está ocupado por una reserva o préstamo en ese horario.',
+                self.disponibilidad(e['tipo'], inicio, fin),
+            )
         p={'id':self._id(),'equipoId':equipo_id,'usuarioId':u['id'],'inicio':inicio.isoformat(),'fin':fin.isoformat(),'estado':'Confirmada','entregadoEn':None,'devueltoEn':None,'responsable':None,'nota':'','actorId':actor.id if actor else None}
         self.data['prestamos'].append(p); self._log(equipo_id,f"Reservado por {u['nombre']}."); self._save(); return p
 
@@ -109,7 +114,8 @@ class InventoryService:
         e=self.obtener_equipo(p['equipoId'])
         if e['estado']!='Disponible' or self._prestamo_activo(e['id']): raise BusinessError('El equipo no está disponible para entrega.')
         responsable_final = actor.nombre if actor else responsable.strip()
-        p.update(estado='Entregada',entregadoEn=self.reloj.ahora().isoformat(),responsable=responsable_final)
+        p.update(estado='Entregada',entregadoEn=self.reloj.ahora().isoformat(),
+                 responsable=responsable_final,estadoEntrega=estado_entrega or 'Bueno')
         if actor: p['actorId'] = actor.id
         u=next(x for x in self.data['usuarios'] if x['id']==p['usuarioId'])
         self._log(e['id'],f"Entregado a {u['nombre']} por {responsable_final}. Estado: {estado_entrega or 'Bueno'}."); self._save(); return p
@@ -159,7 +165,8 @@ class InventoryService:
         for p in sorted(self.data['prestamos'],key=lambda x:x['inicio'],reverse=True):
             e=self.obtener_equipo(p['equipoId']); u=next(x for x in self.data['usuarios'] if x['id']==p['usuarioId'])
             estado='Atrasada' if p['estado']=='Entregada' and a_utc(p['fin'])<self.reloj.ahora() else p['estado']
-            out.append({**p,'equipo':e['nombre'],'usuario':u['nombre'],'estado':estado})
+            out.append({**p,'equipo':e['nombre'],'usuario':u['nombre'],
+                        'documento':u['documento'],'estado':estado})
         return out
     def historial_equipo(self,eid):
         self.obtener_equipo(eid); return sorted([x for x in self.data['eventos'] if x['equipoId']==eid],key=lambda x:x['fecha'],reverse=True)
@@ -181,20 +188,31 @@ class InventoryService:
     @_transaccional
     def verificar_porteria(self,codigo,actor=None):
         self._exigir(actor, 'VERIFICAR_PORTERIA')
-        codigo=(codigo or '').strip().upper(); e=next((x for x in self.data['equipos'] if x['id'].upper()==codigo),None)
+        quien = f' Verificada por {actor.nombre}.' if actor else ''
+        codigo=(codigo or '').strip().upper()
+        e=next((x for x in self.data['equipos'] if x['id'].upper()==codigo),None)
         if e:
             p=self._prestamo_activo(e['id'])
             if not p:
-                texto='ALERTA portería: salida sin préstamo activo.'
-                if actor: texto += f' Verificada por {actor.nombre}.'
-                self._log(e['id'],texto); self._save()
+                self._log(e['id'],'ALERTA portería: salida sin préstamo activo.'+quien)
+                self._save()
                 return {'ok':False,'tipo':'equipo','mensaje':f"{e['nombre']} NO tiene préstamo activo. No debe salir.",'detalle':[]}
             u=next(x for x in self.data['usuarios'] if x['id']==p['usuarioId'])
+            self._log(e['id'],f"Portería autorizó salida de {e['nombre']} a {u['nombre']}."+quien)
+            self._save()
             return {'ok':True,'tipo':'equipo','mensaje':f"{e['nombre']} autorizado para {u['nombre']}.",'detalle':[f"Documento: {u['documento']}",f"Devolución: {p['fin']}"]}
         u=next((x for x in self.data['usuarios'] if x['documento'].upper()==codigo),None)
         if u:
             ps=[p for p in self.data['prestamos'] if p['usuarioId']==u['id'] and p['estado']=='Entregada']
-            if not ps: return {'ok':False,'tipo':'usuario','mensaje':f"{u['nombre']} no tiene equipos a cargo. Si lleva uno, no está autorizado.",'detalle':[]}
+            if not ps:
+                self._log('',f"ALERTA portería: {u['nombre']} no tiene equipos activos."+quien)
+                self._save()
+                return {'ok':False,'tipo':'usuario','mensaje':f"{u['nombre']} no tiene equipos a cargo. Si lleva uno, no está autorizado.",'detalle':[]}
             detalle=[f"{p['equipoId']} · {self.obtener_equipo(p['equipoId'])['nombre']} (devuelve {p['fin']})" for p in ps]
+            for p in ps:
+                self._log(p['equipoId'],f"Portería verificó a {u['nombre']} con {p['equipoId']}."+quien)
+            self._save()
             return {'ok':True,'tipo':'usuario','mensaje':f"{u['nombre']} tiene {len(ps)} equipo(s) autorizado(s).",'detalle':detalle}
+        self._log('',f'ALERTA portería: código no reconocido ({codigo}).'+quien)
+        self._save()
         return {'ok':False,'tipo':'desconocido','mensaje':'Código no reconocido. Verifique manualmente.','detalle':[]}
