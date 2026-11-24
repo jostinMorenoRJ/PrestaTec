@@ -7,7 +7,7 @@ Aplicación web local desarrollada en Python. Permite administrar inventario, us
 | Lo solicitado | Dónde encontrarlo |
 |---|---|
 | **Especificación (SDD)** | `openspec/specs/prestamos/spec.md` (RF01–RF09) y los deltas `openspec/changes/devolucion-responsable/` (RF06a) y `openspec/changes/devolucion-unica/` (RF06b) |
-| **Pruebas (pytest)** | `tests/test_prestamos.py` — 12 pruebas de registro, préstamo, devolución, disponibilidad, daño, portería, persistencia y los dos ciclos |
+| **Pruebas (pytest)** | `tests/test_prestamos.py` — 13 pruebas de registro, préstamo, devolución, disponibilidad, daño, portería, persistencia y los dos ciclos |
 | **Programa Python** | `prestatec/service.py` — `InventoryService`: `registrar_equipo`, `registrar_usuario`, `crear_prestamo`, `entregar`, `devolver`, `listar_equipos` |
 
 **Origen del núcleo:** `service.py` y `test_prestamos.py` provienen de una línea
@@ -30,23 +30,40 @@ el historial. Los dos ciclos nuevos muestran el método sin ambigüedad:
 | Spec | `131d82c` |
 | Prueba RED — 1 fallo / 11 en verde | `d002ae0` |
 | Código GREEN — 12 en verde | `6907506` |
+| REFACTOR de `listar_equipos`, sin cambio de comportamiento | `beadd92` |
 
-Etiqueta del ciclo 2: `devolucion-unica`. Etiqueta general del primer entregable: `nucleo`.
+Etiqueta del ciclo 2: `devolucion-unica` (sobre el GREEN). Etiqueta general del
+primer entregable: `nucleo`. La prueba con nombre claro para "consultar
+disponibles y prestados" se añadió en `513209a`: 13 en `test_prestamos.py`.
 
 **Nota de honestidad:** los commits del ciclo 1 se ejecutaron con un
 `identidades.json` local. En un clon limpio de esos commits, `test_ACC01...`
 fallaba por depender de ese archivo ignorado; se corrigió en `ca6aa0c`. Por eso
 la evidencia RED/GREEN del ciclo 1 se mide sobre `tests/test_prestamos.py`, no
 sobre la suite completa. El ciclo 2 nace después de la corrección: su RED es
-1 fallo / 79 en verde y su GREEN 80 en verde en clon limpio.
+1 fallo / 79 en verde y su GREEN 80 en verde en clon limpio (81 tras la prueba
+de clarificación en `513209a`).
 
 ```powershell
-git log --oneline --decorate -9
+git log --oneline --decorate -12
 git show 9fc38c1 -- tests/test_prestamos.py
 git show 9695bde -- prestatec/service.py
 git show d002ae0 -- tests/test_prestamos.py
 git show 6907506 -- prestatec/service.py
+git show beadd92 -- prestatec/service.py
 ```
+
+## Ejecutar en 3 comandos
+
+```powershell
+pip install -r requirements.txt
+python -m pytest
+python run.py
+```
+
+Con eso la suite queda en verde y el servidor abre en
+**http://127.0.0.1:5080**. El paso a paso para Windows y VS Code está más abajo,
+en la sección 2.
 
 ## Extras opcionales
 
@@ -57,6 +74,13 @@ Todo lo demás no exigido por el enunciado mínimo: autenticación y permisos
 demostración C13, evidencias en `openspec/ejecucion-*.md` y el informe Word en
 `documentacion/`. Cada extra tiene su propuesta en `openspec/changes/` y se
 puede ignorar sin afectar al núcleo.
+
+**Qué se puede ignorar al revisar:** los `openspec/ejecucion-c0.md` …
+`ejecucion-c13.md` y los changes C0–C13 son evidencia e incrementos previos, no
+hacen falta para entender ni ejecutar lo pedido. Los tres sitios que importan
+son `openspec/specs/prestamos/spec.md`, `openspec/changes/devolucion-responsable/`
+y `openspec/changes/devolucion-unica/`. Hay un índice breve en
+`openspec/README.md`.
 
 ## 1. Requisitos
 
@@ -114,7 +138,7 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **80 pruebas**: las 77 de la línea base y cambios anteriores, más las 2 del ciclo `DEV` y la 1 del ciclo `DUP` del núcleo. Verificado en un clon limpio (sin `data.json` ni `identidades.json`): **80 passed**. La salida completa está en `documentacion/evidencia-pytest-clon-limpio.txt` y el informe histórico de C13 en `documentacion/Pruebas_PrestaTec_C13.docx` (77 pruebas en ese momento). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **81 pruebas**: las 77 de la línea base y cambios anteriores, más las 2 del ciclo `DEV`, la 1 del ciclo `DUP` y la prueba de clarificación de disponibles/prestados. Verificado en un clon limpio (sin `data.json` ni `identidades.json`): **81 passed**. La salida completa está en `documentacion/evidencia-pytest-clon-limpio.txt` y el informe histórico de C13 en `documentacion/Pruebas_PrestaTec_C13.docx` (77 pruebas en ese momento). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
 Para ver solo los dos ciclos Spec → Test → Código del núcleo:
 
@@ -243,12 +267,17 @@ La interfaz muestra estados vacíos, mensajes de éxito/error, indicación de ca
 
 ## 6. Metodología solicitada
 
-La especificación está en `openspec/` y las pruebas están en `tests/`. El orden de trabajo aplicado es:
+El orden **Spec → Red → Green → Refactor** se aplicó formalmente en los dos
+ciclos del núcleo —`devolucion-responsable` (DEV) y `devolucion-unica` (DUP)—
+sobre una base previa documentada en `openspec/legacy/` y presente desde
+`8a92475`. **No** se escribieron todas las pruebas antes que todo el código: la
+línea base ya traía `service.py` y `test_prestamos.py`. Por eso la evidencia
+limpia son esos dos ciclos (ver "Núcleo pedido" y su nota de honestidad):
 
-1. **SDD / OpenSpec:** `proposal.md`, `design.md` y `spec.md` definen el problema, alcance, reglas y criterios.
-2. **TDD — Red:** se escribieron primero las pruebas que describen los comportamientos esperados.
-3. **TDD — Green:** se implementó `prestatec/service.py` y las rutas HTTP para satisfacerlas.
-4. **TDD — Refactor:** se separaron reglas de negocio, servidor e interfaz para mantener el código organizado y sencillo.
+1. **Spec / SDD:** `proposal.md`, `design.md`, `tasks.md` y el delta de spec antes de tocar prueba o código (`a76091e`, `131d82c`).
+2. **Red:** la prueba nueva falla contra el código existente (`9fc38c1`: 2 fallos; `d002ae0`: 1 fallo).
+3. **Green:** el cambio mínimo que la hace pasar (`9695bde`, `6907506`).
+4. **Refactor:** sin cambio de comportamiento y con la suite en verde (`beadd92` en `listar_equipos`).
 
 Las tareas de cada incremento están en `openspec/changes/<change>/tasks.md`, con
 casilla `[x]` si ya se completó y `[ ]` si sigue pendiente. Los dos ciclos del
@@ -266,7 +295,7 @@ El código está publicado en **https://github.com/jostinMorenoRJ/PrestaTec.git*
 |---|---|
 | `nucleo-1-spec` / `nucleo-2-red` / `nucleo-3-green` | Pasos del ciclo 1 (DEV) |
 | `nucleo` | Estado del primer entregable |
-| `devolucion-unica` | Ciclo 2 (DUP), GREEN con 80 pruebas |
+| `devolucion-unica` | Ciclo 2 (DUP), GREEN con 80 pruebas (estado final: 81) |
 
 Para verlo:
 

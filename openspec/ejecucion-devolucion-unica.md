@@ -4,6 +4,8 @@
 **Commit de spec:** `131d82c`
 **Commit RED:** `d002ae0`
 **Commit GREEN:** `6907506` — etiqueta `devolucion-unica`
+**Commit REFACTOR:** `beadd92`
+**Prueba de clarificación:** `513209a`
 
 ## Origen
 
@@ -50,7 +52,21 @@ tests/test_prestamos.py: 12 passed in 0.21s
 suite completa:          80 passed in 7.57s
 ```
 
-## 4. Diferencia con el ciclo 1
+## 4. REFACTOR (cuarto paso)
+
+`beadd92` divide `listar_equipos`: un bucle legible y el ayudante
+`_usuario_de_prestamo` sustituyen las dos líneas largas. Mismo contrato y mismos
+campos (`estado`, `poseedor`, `devolucion`); la suite sigue en **80 passed**.
+Sin este commit el método solo tenía Spec, Red y Green.
+
+Después se añadió `513209a`
+(`test_listar_equipos_separa_disponibles_y_prestados`) para nombrar
+explícitamente uno de los cuatro pedidos del enunciado. **No es un RED**: la
+función ya existía. El primer intento comparó `devolucion` contra el `datetime`
+original y falló porque `crear_prestamo` normaliza a UTC ISO; se corrigió a
+`prestamo['fin']` antes de publicar. Suite final: **81 passed**.
+
+## 5. Diferencia con el ciclo 1
 
 Este ciclo nace después de `ca6aa0c`, la corrección que hace que
 `test_ACC01...` cree credenciales en `tmp_path`. Por sus números son válidos
@@ -58,11 +74,12 @@ también en un clon limpio, sin `identidades.json` ni `data.json`. La salida
 completa de `pytest -v` en clon limpio está en
 `documentacion/evidencia-pytest-clon-limpio.txt`.
 
-## 5. Cómo mostrarlo
+## 6. Cómo mostrarlo
 
 ```powershell
 git show 131d82c -- openspec/changes/devolucion-unica
 git show d002ae0 -- tests/test_prestamos.py
 git show 6907506 -- prestatec/service.py
-git log --oneline --decorate -4
+git show beadd92 -- prestatec/service.py
+git log --oneline --decorate -6
 ```

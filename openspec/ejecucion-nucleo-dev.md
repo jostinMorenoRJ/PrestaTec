@@ -100,4 +100,4 @@ no depende de archivos ignorados y da los mismos números en local y en clon
 limpio: RED `2 failed, 9 passed`, GREEN `11 passed`. No se reescribió el
 historial: las etiquetas `nucleo-1-spec`, `nucleo-2-red` y `nucleo-3-green`
 siguen apuntando a los commits originales. La suite completa en el HEAD actual
-es `80 passed`, verificada en clon limpio.
+es `81 passed`, verificada en clon limpio.
