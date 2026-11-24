@@ -158,11 +158,27 @@ class InventoryService:
         p['estado']=estado; self._log(p['equipoId'],texto); self._save(); return p
 
     def listar_equipos(self):
-        result=[]
-        for e in self.data['equipos']:
-            p=self._prestamo_activo(e['id']); u=next((x for x in self.data['usuarios'] if p and x['id']==p['usuarioId']),None)
-            result.append({**e,'estado':'Prestado' if p else e['estado'],'poseedor':u['nombre'] if u else None,'devolucion':p['fin'] if p else None})
-        return result
+        """Devuelve el inventario con el estado y el poseedor vigentes."""
+        resultado = []
+        for equipo in self.data['equipos']:
+            prestamo = self._prestamo_activo(equipo['id'])
+            usuario = self._usuario_de_prestamo(prestamo)
+            resultado.append({
+                **equipo,
+                'estado': 'Prestado' if prestamo else equipo['estado'],
+                'poseedor': usuario['nombre'] if usuario else None,
+                'devolucion': prestamo['fin'] if prestamo else None,
+            })
+        return resultado
+
+    def _usuario_de_prestamo(self, prestamo):
+        """Localiza al usuario de un préstamo activo; None si no lo hay."""
+        if not prestamo:
+            return None
+        return next(
+            (u for u in self.data['usuarios'] if u['id'] == prestamo['usuarioId']),
+            None,
+        )
     def listar_usuarios(self): return list(self.data['usuarios'])
     def listar_prestamos(self):
         out=[]
