@@ -58,7 +58,13 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-Las pruebas verifican registro de usuarios y equipos, identificadores únicos, reservas, prevención de cruces de horario, entrega, devolución, daños, portería, persistencia y rutas HTTP.
+La suite tiene **19 pruebas**: 12 originales (dominio y HTTP) y 7 de caracterización en `tests/characterization/`, que documentan el comportamiento actual, incluidos defectos conocidos. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+
+Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
+
+```powershell
+py -m pytest -m characterization -v
+```
 
 ## 4. Datos de demostración
 
@@ -100,21 +106,19 @@ La especificación está en `openspec/` y las pruebas están en `tests/`. El ord
 3. **TDD — Green:** se implementó `prestatec/service.py` y las rutas HTTP para satisfacerlas.
 4. **TDD — Refactor:** se separaron reglas de negocio, servidor e interfaz para mantener el código organizado y sencillo.
 
-## 7. Publicar en GitHub
+## 7. Control de versiones
 
-Crea un repositorio remoto desde la cuenta de GitHub del equipo. En la carpeta del proyecto, abre la terminal y ejecuta (reemplaza la URL por la del repositorio creado):
+El repositorio Git **ya está inicializado** en esta carpeta y contiene el commit de línea base `8a92475 chore: linea base y gobernanza (C0)`. Para ver el historial:
 
 ```powershell
-git init
-git add .
-git commit -m "Primera versión de PrestaTec en Python"
-git branch -M main
-git remote add origin https://github.com/USUARIO/PrestaTec.git
-git push -u origin main
+git log --oneline
+git status
 ```
 
-El archivo `.gitignore` excluye el entorno virtual, caché y `data.json` para no publicar datos locales de prueba.
+**No se ha publicado en GitHub**: no existe repositorio remoto ni autorización para publicar. Cuando se decida, se requiere definir el dueño del repositorio, la visibilidad y la política de datos antes de configurar `origin`.
+
+`.gitignore` excluye el entorno virtual, las cachés y `data.json` para no versionar datos de prueba.
 
 ## 8. Alcance y mejoras futuras
 
-El levantamiento de requisitos incluye asuntos que deben definirse con la universidad: duración máxima del préstamo, anticipación de reservas, quién aprueba/cancela, sanciones, integración con correo/sistema académico y retención histórica. La autenticación real, permisos por rol, notificaciones automáticas, respaldos y despliegue institucional también requieren una siguiente iteración. Se dejaron documentados en `openspec/changes/prestamos-universidad/design.md` para no inventar políticas.
+El levantamiento de requisitos incluye asuntos que deben definirse con la universidad: duración máxima del préstamo, anticipación de reservas, quién aprueba/cancela, sanciones, integración con correo/sistema académico y retención histórica. La autenticación real, permisos por rol, notificaciones automáticas, respaldos y despliegue institucional también requieren una siguiente iteración. Se dejaron documentados en `openspec/legacy/prestamos-universidad/design.md` y en `openspec/specs/requisitos-institucionales/spec.md` para no inventar políticas.

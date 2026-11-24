@@ -11,11 +11,11 @@
 - [x] Ejecutar la suite completa: **19 passed in 0.39s**.
 - [x] Registrar evidencia y limitaciones en `openspec/ejecucion-c0.md`.
 
-## Pendientes
-
-- [ ] Inicializar repositorio Git — **bloqueado**: `git` no está instalado ni
-      disponible en el PATH. No se creó `.git` ni el commit.
-- [ ] Commit descriptivo `chore: línea base y gobernanza` una vez resuelto lo anterior.
+- [x] Instalar Git 2.56.1 con autorización explícita (`winget`, paquete `Git.Git`).
+- [x] Inicializar repositorio Git en el workspace.
+- [x] Commit descriptivo `8a92475 chore: linea base y gobernanza (C0)`.
+- [x] Preparar `.vscode/` y `README.md` para ejecutar el proyecto en Visual Studio Code.
+- [x] Verificar la suite completa tras la configuración: **19 passed**.
 
 > Nota: C0 es infraestructura. Las pruebas de caracterización documentan el
 > comportamiento actual y nacen en verde; no se afirma una fase RED de

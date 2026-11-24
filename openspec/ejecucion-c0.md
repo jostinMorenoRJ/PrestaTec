@@ -41,19 +41,25 @@ su fallo.
 La condición RED de C0 fue únicamente la ausencia de andamiaje: antes de este
 change no existían `pyproject.toml`, `AGENTS.md` ni `tests/characterization/`.
 
-## Limitación bloqueante
+## Control de versiones
 
-**No se pudo inicializar Git.** El ejecutable `git` no está en el PATH y no se
-encontró instalación local en las rutas habituales (`Program Files\Git`,
-`Program Files (x86)\Git`, `AppData\Local\Programs\Git`).
+Inicialmente `git` no estaba instalado. Tras la autorización explícita del
+usuario se instaló **Git 2.56.1.windows.1** mediante `winget` (paquete `Git.Git`,
+con verificación de hash por el gestor).
 
-En consecuencia:
+- Repositorio inicializado en el workspace.
+- Commit `8a92475 chore: linea base y gobernanza (C0)`.
+- Configuración local de autor: `PrestaTec 2.0 <prestatec2@local.invalid>`.
+- No se publicó en GitHub: no hay repositorio remoto ni autorización de publicación.
 
-- No existe `.git` en el workspace.
-- No se creó el commit `chore: línea base y gobernanza`.
-- El requisito `INT-07` y la tarea Git de C0 permanecen **pendientes**, no aprobadas.
+## Configuración para Visual Studio Code
 
-No se instaló software ni se descargó Git sin autorización.
+El proyecto se preparó para abrir la carpeta directamente en VS Code:
+
+- `.vscode/settings.json`: pytest habilitado sobre `tests/` y descubrimiento automático.
+- `.vscode/launch.json`: depuración del servidor y de la suite pytest con el intérprete del entorno.
+- `.vscode/tasks.json`: tareas "ejecutar pruebas" e "iniciar servidor" usando el intérprete activo.
+- `README.md`: instrucciones de instalación, ejecución y pruebas adaptadas a este workspace.
 
 ## Estado del change C0
 
@@ -65,4 +71,5 @@ No se instaló software ni se descargó Git sin autorización.
 | `AGENTS.md` | Completado (`AGENTS.md.txt` conservado) |
 | Pruebas de caracterización | Completadas (7/7) |
 | Suite completa | Completada (19/19) |
-| Git inicializado y commit | **Pendiente: Git no instalado** |
+| Git inicializado y commit | Completado (`8a92475`) |
+| Configuración VS Code | Completada |
