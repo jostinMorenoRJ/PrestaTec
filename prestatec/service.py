@@ -121,17 +121,20 @@ class InventoryService:
         self._log(e['id'],f"Entregado a {u['nombre']} por {responsable_final}. Estado: {estado_entrega or 'Bueno'}."); self._save(); return p
 
     @_transaccional
-    def devolver(self, pid, danio=False, nota='', actor=None):
+    def devolver(self, pid, danio=False, nota='', actor=None, responsable_devolucion=None):
         self._exigir(actor, 'ENTREGAR_DEVOLVER')
         if danio: self._exigir(actor, 'REGISTRAR_DANO')
         p=self._find_prestamo(pid)
         if p['estado']!='Entregada': raise BusinessError('Esta reserva no tiene un equipo entregado.')
         e=self.obtener_equipo(p['equipoId']); tarde=self.reloj.ahora()>a_utc(p['fin'])
-        p.update(estado='Devuelta',devueltoEn=self.reloj.ahora().isoformat(),nota=nota or '')
+        recibe = (responsable_devolucion or '').strip() or (str(actor.nombre or '') if actor else '')
+        p.update(estado='Devuelta',devueltoEn=self.reloj.ahora().isoformat(),nota=nota or '',
+                 responsableDevolucion=recibe)
         if actor: p['actorId'] = actor.id
         if danio: e['estado']='Mantenimiento'
         texto=f"Devuelto{' con retraso' if tarde else ''}. {'Daño reportado: '+(nota or 'Sin detalle') if danio else 'Sin novedad.'}"
         if actor: texto += f' Registrado por {actor.nombre}.'
+        if recibe: texto += f' Recibido por {recibe}.'
         self._log(e['id'],texto); self._save(); return p
 
     @_transaccional
