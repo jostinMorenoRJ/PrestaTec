@@ -1,6 +1,7 @@
 # Ejecución C12 — perfiles por rol y experiencia de usuario
 
 **Fecha:** 2026-11-24
+**Commit:** `9eef23d` (implementación), `docs:` (referencias de trazabilidad)
 **Change:** `openspec/changes/perfiles-y-experiencia/`
 **Spec:** `openspec/changes/perfiles-y-experiencia/specs/perfiles/spec.md` (PER-01..PER-07)
 **Decisiones del usuario:** tres roles (`Consulta`, `Guarda`, `Encargado`),

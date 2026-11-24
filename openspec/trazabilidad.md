@@ -32,7 +32,7 @@ Los requisitos marcados como *parcial* tienen otros changes pendientes.
 | INT-04 Separación de capas | `repositorio-interfaz` (ARQ-01) | `tests/test_repositorio.py` (4 pruebas, `a9aef30`) | `prestatec/repository.py`, `prestatec/service.py` (`a9aef30`) |
 | INT-05 Sin botones muertos | `identidad-rbac` (SEC-02) + `perfiles-y-experiencia` (PER-07) | verificación en navegador registrada en `ejecucion-c12.md`; `test_PER07_ui_tres_perfiles_y_disponibilidad` comprueba el enlace de navegación | `static/app.js`, `static/index.html`, `static/styles.css` (C12) |
 | INT-06 Ejecutar pruebas | `gobernanza-linea-base` (GOV-01) | suite completa ejecutada: 19 → 23 → 27 → 35 → 42 → 57 → 72 pruebas | `pyproject.toml`, `openspec/ejecucion-c0.md` … `ejecucion-c5.md`, `ejecucion-c12.md` |
-| INT-07 Git y decisiones | `gobernanza-linea-base` (INT-07) | `git log --oneline`: `8a92475`, `96038a3`, `a9aef30`, `57aaf28`, `170c221`, `88560ef`, `1b25d73`, `9e1af65` y C12 (consultar historial) | repo local inicializado; sin remoto ni publicación (solo commit local) |
+| INT-07 Git y decisiones | `gobernanza-linea-base` (INT-07) | `git log --oneline`: `8a92475`, `96038a3`, `a9aef30`, `57aaf28`, `170c221`, `88560ef`, `1b25d73`, `9e1af65`, `9eef23d` | repo local inicializado; sin remoto ni publicación (solo commit local) |
 | ARC-01/02 Repositorio inyectado | `repositorio-interfaz` | `tests/test_repositorio.py` | `prestatec/repository.py` (`a9aef30`) |
 | ARC-03 Reloj UTC | `reloj-politicas` | `tests/test_reloj.py` (4 pruebas) | `prestatec/reloj.py`, `prestatec/service.py` (`57aaf28`) |
 | ARC-04 Políticas inyectables | `reloj-politicas` | `test_ARC04_politica_sin_valor_no_rechaza_por_duracion` | `prestatec/politicas.py` (`57aaf28`) |
