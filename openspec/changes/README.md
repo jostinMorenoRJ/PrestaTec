@@ -19,7 +19,7 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 11 | `reportes-retencion` | C10 | RF08, RES-03 | pendiente |
 | 12 | `endurecimiento-despliegue` | C11 | PDF-RNF04, PDF-RNF02, DEC-07 | pendiente |
 | 13 | `perfiles-y-experiencia` | C12 (adicional) | PER-01..PER-07; REFACTOR de defectos P3/P5/P6/P8/P9 | completado (`9eef23d`) |
-| 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`72c98e5`) |
+| 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`2be8cd9`) |
 
 **Estado:** C0–C5, C12 y C13 completados con evidencia RED → GREEN → REFACTOR en
 `openspec/ejecucion-c0.md` … `ejecucion-c5.md`, `ejecucion-c12.md` y

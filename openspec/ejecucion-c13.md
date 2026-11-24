@@ -1,7 +1,7 @@
 # Ejecución C13 — acceso visible y cuentas de demostración
 
 **Fecha:** 2026-11-24
-**Commit:** `72c98e5`
+**Commit:** `2be8cd9` (implementación), `docs:` (referencias de trazabilidad)
 **Change:** `openspec/changes/acceso-y-cuentas-demo/`
 **Spec:** `openspec/changes/acceso-y-cuentas-demo/specs/acceso/spec.md` (ACC-01..ACC-04)
 **Decisión del usuario:** `admin`/`admin123` → Encargado, `celador`/`celador123`
