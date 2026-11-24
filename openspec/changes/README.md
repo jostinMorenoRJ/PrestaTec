@@ -26,17 +26,18 @@ núcleo (15–17), que son los que interesan para la entrega.
 | 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`2be8cd9`) |
 | 15 | `devolucion-responsable` | Núcleo (RF06) | DEV-01..DEV-04; responsable de la devolución | completado (`a76091e` → `9fc38c1` → `9695bde`) |
 | 16 | `devolucion-unica` | Núcleo (RF06) | DUP-01..DUP-03; segunda devolución rechazada | completado (`131d82c` → `d002ae0` → `6907506`) |
-| 17 | `demo-acceso-inicial` | Núcleo (acceso) | DEMO-01..DEMO-04; login usable en el primer arranque | completado (`54c5d08` → `89b6938` → `4ab6f17`) |
+| 17 | `demo-acceso-inicial` | Acceso (DEMO) | DEMO-01..DEMO-04; login usable en el primer arranque | completado (`54c5d08` → `89b6938` → `4ab6f17`) |
 
-**Estado:** C0–C5, C12, C13 y los tres changes del núcleo
-(`devolucion-responsable`, `devolucion-unica` y `demo-acceso-inicial`) completados con evidencia
+**Estado:** C0–C5, C12, C13 y los tres changes principales —dos del núcleo de
+préstamo (`devolucion-responsable`, `devolucion-unica`) y uno de acceso
+(`demo-acceso-inicial`)— completados con evidencia
 RED → GREEN → REFACTOR en `openspec/evidencia/ejecucion-c0.md` … `ejecucion-c5.md`,
 `ejecucion-c12.md`, `ejecucion-c13.md`, `ejecucion-nucleo-dev.md`,
 `ejecucion-devolucion-unica.md` y `ejecucion-demo.md`. El núcleo (`service.py` y
 `test_prestamos.py`) proviene de la línea base `8a92475`, documentada en
-`openspec/legacy/`; los dos cambios anter son los ciclos formales aplicados
-desde ahí, sin reescritura del historial. C6–C11 permanecen pendientes y
-requieren autorización/decisiones institucionales según cada proposal. C12,
-C13 y estos dos changes no sustituyen a esos changes: corrigen defectos
+`openspec/legacy/`; los tres changes principales son los ciclos formales
+aplicados desde ahí, sin reescritura del historial. C6–C11 permanecen pendientes
+y requieren autorización/decisiones institucionales según cada proposal. C12,
+C13 y estos tres changes no sustituyen a los incrementos anteriores: corrigen defectos
 documentados y aplican decisiones del usuario sobre perfiles, acceso local y
 trazabilidad del núcleo.

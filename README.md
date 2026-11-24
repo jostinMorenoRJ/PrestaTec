@@ -54,9 +54,10 @@ sin reescribir el historial. El detalle y la nota de honestidad están en
 | DUP — devolución única | `131d82c` | `d002ae0` | `6907506` | `devolucion-unica` |
 | DEMO — acceso en el primer arranque | `54c5d08` | `89b6938` | `4ab6f17` | `demo-acceso-inicial` |
 
-DEV y DUP son los ciclos del núcleo; DUP incluye además el REFACTOR `beadd92`.
-Cada paso se puede comprobar con `git show <commit>`; los comandos concretos y
-el detalle de cada fase están en `openspec/README.md`.
+DEV y DUP son los ciclos del núcleo de préstamo; DUP incluye además el REFACTOR
+`beadd92`. DEMO cubre el acceso en el primer arranque, no el núcleo. Cada paso
+se puede comprobar con `git show <commit>`; los comandos concretos y el detalle
+de cada fase están en `openspec/README.md`.
 
 ## Extras opcionales
 
@@ -127,8 +128,9 @@ La suite final tiene **90 pruebas** y pasa en verde también en un clon limpio,
 sin `data.json` ni `identidades.json`: **90 passed**. Es el resultado de la
 línea base previa, los ciclos DEV, DUP y DEMO y cinco pruebas de regresión de los
 CLI (`a8543d3` → `0632c45`). La
-salida completa está en `documentacion/evidencia-pytest-clon-limpio.txt`; el
-informe histórico de C13 quedó en `documentacion/Pruebas_PrestaTec_C13.docx`.
+salida completa está en `documentacion/evidencia-pytest-clon-limpio.txt`. El
+`documentacion/Pruebas_PrestaTec_C13.docx` es un informe **histórico**: registró
+77 pruebas en C13, antes de los tres ciclos, y no refleja el estado final.
 Algunas pruebas son de caracterización: documentan el comportamiento real, no
 son criterios de aceptación definitivos.
 
