@@ -42,6 +42,25 @@ def test_prestar_y_devolver_equipo_actualiza_disponibilidad(sistema):
     assert sistema.obtener_equipo(equipo["id"])["estado"] == "Disponible"
 
 
+def test_listar_equipos_separa_disponibles_y_prestados(sistema):
+    """Consultar disponibles y prestados: uno de los pedidos del enunciado."""
+    usuario, equipo = registrar_base(sistema)
+    disponible = sistema.registrar_equipo("Proyector", "Epson", "Sala 2")
+    inicio = datetime.now() - timedelta(minutes=1)
+    fin = datetime.now() + timedelta(hours=2)
+    prestamo = sistema.crear_prestamo(equipo["id"], usuario["documento"], inicio, fin)
+    sistema.entregar(prestamo["id"], "Encargada", "Bueno")
+
+    inventario = sistema.listar_equipos()
+    prestados = [e for e in inventario if e["estado"] == "Prestado"]
+    libres = [e for e in inventario if e["estado"] == "Disponible"]
+
+    assert [e["id"] for e in prestados] == [equipo["id"]]
+    assert [e["id"] for e in libres] == [disponible["id"]]
+    assert prestados[0]["poseedor"] == "María Pérez"
+    assert prestados[0]["devolucion"] == prestamo["fin"]
+
+
 def test_no_permite_prestar_equipo_ya_prestado(sistema):
     usuario, equipo = registrar_base(sistema)
     inicio = datetime.now() - timedelta(minutes=1)
