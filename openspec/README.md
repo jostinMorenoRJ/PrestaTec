@@ -47,6 +47,11 @@ documentada en `legacy/`: **no** se escribieron todas las pruebas antes que todo
 el código. SDD/TDD se aplicó formalmente en los tres ciclos anteriores a partir
 de esa base, sin reescribir historial.
 
+Después de mover los CLI a `scripts/`, `python scripts/crear_demo.py` desde la
+raíz fallaba con `ModuleNotFoundError` (`sys.path[0]` apuntaba a `scripts/`). Se
+corrigió con prueba antes que código: RED `a8543d3` (5 fallos) y GREEN `0632c45`
+(90 passed). Es una corrección de regresión, no un cuarto ciclo de spec.
+
 Los commits del ciclo 1 se ejecutaron con un `identidades.json` local. En un
 clon limpio de esos commits, `test_ACC01...` fallaba por depender de ese archivo
 ignorado; se corrigió en `ca6aa0c`. Por eso la evidencia RED/GREEN del ciclo 1 se

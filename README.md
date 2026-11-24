@@ -123,9 +123,10 @@ incrementos previos: no hacen falta para entender ni ejecutar lo pedido.
 py -m pytest -v
 ```
 
-La suite final tiene **85 pruebas** y pasa en verde también en un clon limpio,
-sin `data.json` ni `identidades.json`: **85 passed**. Es el resultado de la
-línea base previa, los ciclos DEV y DUP y las cuatro pruebas del ciclo DEMO. La
+La suite final tiene **90 pruebas** y pasa en verde también en un clon limpio,
+sin `data.json` ni `identidades.json`: **90 passed**. Es el resultado de la
+línea base previa, los ciclos DEV, DUP y DEMO y cinco pruebas de regresión de los
+CLI (`a8543d3` → `0632c45`). La
 salida completa está en `documentacion/evidencia-pytest-clon-limpio.txt`; el
 informe histórico de C13 quedó en `documentacion/Pruebas_PrestaTec_C13.docx`.
 Algunas pruebas son de caracterización: documentan el comportamiento real, no
