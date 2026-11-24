@@ -24,18 +24,22 @@ def estaticos():
     return html, css, js
 
 
-def test_ACC01_cuentas_reales_inician_sesion_con_su_perfil():
-    ruta = RAIZ / 'identidades.json'
+def test_ACC01_cuentas_reales_inician_sesion_con_su_perfil(tmp_path):
+    # Aislado de identidades.json: ese archivo esta fuera de Git, asi que un
+    # clon limpio debe poder ejecutar la prueba sin credenciales previas.
+    ruta = tmp_path / 'identidades.json'
     almacen = AlmacenCredenciales(ruta)
+    for documento, clave, rol, _vista in CUENTAS:
+        almacen.crear(documento, clave, rol)
 
-    # La credencial heredada `admin` (Administrador) fue sustituida.
+    # admin se da de alta como Encargado: Administrador se elimino en C12.
     assert almacen.rol('admin') == 'Encargado'
-    for documento, clave, rol, vista in CUENTAS:
+    for documento, clave, rol, _vista in CUENTAS:
         assert almacen.verificar(documento, clave), documento
         assert almacen.rol(documento) == rol
 
     app = PrestaTecApp(
-        data_file=RAIZ / 'data.json', seed=False, identidad_file=ruta
+        data_file=tmp_path / 'data.json', seed=False, identidad_file=ruta
     )
     for documento, clave, rol, vista in CUENTAS:
         token = app.identidad.autenticar(documento, clave)
