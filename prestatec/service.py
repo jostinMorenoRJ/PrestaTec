@@ -1,37 +1,23 @@
-"""Reglas de negocio de PrestaTec y persistencia sencilla en JSON."""
-import json
+"""Reglas de negocio de PrestaTec.
+
+La persistencia se delega a un repositorio inyectado; este módulo no conoce
+ni archivos ni motores de base de datos.
+"""
 from datetime import datetime
-from pathlib import Path
 from uuid import uuid4
 
-class BusinessError(Exception):
-    """Error de validación o regla de negocio."""
+from .errors import BusinessError
+from .repository import JsonFileRepository, Repository
 
 class InventoryService:
-    def __init__(self, data_file, seed=True):
-        self.data_file = Path(data_file)
-        self.data_file.parent.mkdir(parents=True, exist_ok=True)
-        self.data = self._load()
+    def __init__(self, data_file=None, seed=True, repository: Repository | None = None):
+        self.repository = repository or JsonFileRepository(data_file)
+        self.data = self.repository.load()
         if seed and not self.data['equipos'] and not self.data['usuarios']:
             self._seed(); self._save()
 
-    def _load(self):
-        if self.data_file.exists():
-            try:
-                data = json.loads(self.data_file.read_text(encoding='utf-8'))
-                # Compatibilidad con el JSON PascalCase del proyecto C# original.
-                if 'Equipos' in data:
-                    data = {
-                        'equipos': [{'id':x.get('Id',''),'tipo':x.get('Tipo','Portátil'),'nombre':x.get('Nombre',''),'ubicacion':x.get('Ubicacion',''),'estado':x.get('Estado','Disponible')} for x in data.get('Equipos',[])],
-                        'usuarios': [{'id':x.get('Id',''),'nombre':x.get('Nombre',''),'documento':x.get('Documento',''),'rol':x.get('Rol','Estudiante')} for x in data.get('Usuarios',[])],
-                        'prestamos': [{'id':x.get('Id',''),'equipoId':x.get('EquipoId',''),'usuarioId':x.get('UsuarioId',''),'inicio':x.get('Inicio'),'fin':x.get('Fin'),'estado':x.get('Estado','Confirmada'),'entregadoEn':x.get('EntregadoEn'),'devueltoEn':x.get('DevueltoEn'),'responsable':x.get('Responsable'),'nota':x.get('Nota') or ''} for x in data.get('Reservas',[])],
-                        'eventos': [{'fecha':x.get('Fecha'),'equipoId':x.get('EquipoId',''),'texto':x.get('Texto','')} for x in data.get('Eventos',[])]
-                    }
-                return {**{'equipos': [], 'usuarios': [], 'prestamos': [], 'eventos': []}, **data}
-            except (OSError, json.JSONDecodeError): raise BusinessError('No fue posible leer datos.json.')
-        return {'equipos': [], 'usuarios': [], 'prestamos': [], 'eventos': []}
-
-    def _save(self): self.data_file.write_text(json.dumps(self.data, ensure_ascii=False, indent=2), encoding='utf-8')
+    def _save(self):
+        self.repository.save(self.data)
     def _id(self): return uuid4().hex[:8]
     def _log(self, equipo_id, texto): self.data['eventos'].append({'fecha': datetime.now().isoformat(), 'equipoId': equipo_id, 'texto': texto})
 

@@ -1,10 +1,12 @@
 # Tareas: repositorio e inversión de dependencias
 
-- [ ] Revisar y aprobar esta spec (SDD).
-- [ ] RED: crear prueba que exija inyectar un repositorio falso en el servicio.
-- [ ] Ejecutar y confirmar fallo por ausencia del parámetro.
-- [ ] GREEN: definir interfaz y adaptador JSON; inyectar en el servicio.
-- [ ] REFACTOR: eliminar imports de `json`/`Path` de los casos de uso.
-- [ ] Ejecutar suite completa + caracterización.
-- [ ] Verificar que `data.json` no cambió de formato.
-- [ ] Commit `refactor: repositorio sobre JSON`.
+- [x] Revisar y aprobar esta spec (SDD).
+- [x] RED: crear `tests/test_repositorio.py` (4 pruebas).
+- [x] Ejecutar y confirmar fallo por ausencia de `prestatec.repository`.
+- [x] GREEN: definir interfaz `Repository` y adaptador `JsonFileRepository`.
+- [x] GREEN: inyectar el repositorio en `InventoryService`.
+- [x] REFACTOR: eliminar imports de `json`/`Path` de los casos de uso; anotar el contrato.
+- [x] Ejecutar suite completa + caracterización: **23 passed**.
+- [x] Verificar que `data.json` no cambió de formato (ARQ-02).
+- [x] Registrar evidencia en `openspec/ejecucion-c1.md`.
+- [ ] Commit `refactor: repositorio sobre JSON` — pendiente de ejecutar.
