@@ -129,3 +129,22 @@ def test_DEV02_devolver_toma_el_responsable_de_la_sesion(sistema):
     devuelto = sistema.devolver(prestamo["id"], False, "", actor=actor)
 
     assert devuelto["responsableDevolucion"] == "Guarda Ruiz"
+
+
+def test_DUP01_no_se_puede_devolver_dos_veces_sin_modificar_el_prestamo(sistema):
+    usuario, equipo = registrar_base(sistema)
+    inicio = datetime.now() - timedelta(minutes=1)
+    fin = datetime.now() + timedelta(hours=2)
+    prestamo = sistema.crear_prestamo(equipo["id"], usuario["documento"], inicio, fin)
+    sistema.entregar(prestamo["id"], "Encargada", "Bueno")
+    primera = sistema.devolver(prestamo["id"], False, "")
+    eventos_antes = len(sistema.historial_equipo(equipo["id"]))
+
+    with pytest.raises(BusinessError, match="ya fue devuelto"):
+        sistema.devolver(prestamo["id"], False, "")
+
+    guardada = next(
+        p for p in sistema.listar_prestamos() if p["id"] == prestamo["id"]
+    )
+    assert guardada["devueltoEn"] == primera["devueltoEn"]
+    assert len(sistema.historial_equipo(equipo["id"])) == eventos_antes
