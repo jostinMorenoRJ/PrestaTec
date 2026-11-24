@@ -58,7 +58,7 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **42 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 23 de los cambios C1–C4 (repositorio, reloj, persistencia, configuración, migración, respaldo y restauración). Las de caracterización documentan el comportamiento actual, incluidos defectos conocidos. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **57 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 38 de los cambios C1–C5 (repositorio, reloj, persistencia, configuración, migración, respaldo, restauración, identidad y RBAC). Las de caracterización documentan el comportamiento actual, incluidos defectos conocidos; la de acceso anónimo se actualizó en C5 porque la nueva spec exige autenticación. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -86,7 +86,7 @@ Documentos de ejemplo:
 - Docente Omar Díaz: `80123456`
 - Encargada Laura Gómez: `52111222`
 
-Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`. Esto elimina también los registros creados durante la prueba.
+Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`. Esto elimina también los registros creados durante la prueba, pero **no** elimina las credenciales de `identidades.json`.
 
 ### Persistencia opcional (SQLite)
 
@@ -119,6 +119,30 @@ py respaldar.py restaurar backups\data_....manifest.json data.json --confirmar
 
 `restaurar` valida hash y conteos antes y después de reemplazar el destino. Si el destino es más reciente que la copia, exige `--confirmar`. No hay purga automática: las copias se conservan mientras DEC-06 no defina una retención.
 
+### Ingreso y permisos
+
+Toda ruta `/api/...` exige sesión. Antes del primer ingreso crea una credencial:
+
+```powershell
+py identificar.py crear admin --rol Administrador
+```
+
+La contraseña se solicita por consola (o desde `PRESTATEC_ADMIN_PASSWORD` solo en automatización). Se guarda como hash PBKDF2 con salt en `identidades.json`, archivo ignorado por Git; nunca aparece en `data.json`.
+
+En la barra superior escribe el documento y la contraseña. La interfaz muestra solo las acciones permitidas para el rol:
+
+| Acción | Guarda | Encargado | Soporte | Administrador | Consulta |
+|---|---|---|---|---|---|
+| Verificar en portería | Sí | Sí | No | Sí | No |
+| Entregar / devolver | Sí | Sí | No | Sí | No |
+| Crear equipo / usuario | No | No | No | Sí | No |
+| Registrar daño / mantenimiento | No | Sí | Sí | Sí | No |
+| Habilitar reincorporación | No | Sí | Sí | Sí | No |
+| Exportar reportes | No | Sí | No | Sí | Sí |
+| Consultar historial | No | Sí | Sí | Sí | Sí |
+
+Los roles históricos `Estudiante` y `Docente` se tratan como `Consulta`. La matriz es una aprobación técnica temporal; se cambia en `prestatec/identidad.py` si la universidad define otra. Para SSO institucional se sustituye el proveedor al construir `PrestaTecApp`, sin tocar las reglas de negocio.
+
 ## 5. Módulos de la interfaz
 
 - **Resumen:** indicadores de inventario, atrasos y próximas reservas.
@@ -148,8 +172,8 @@ git status
 
 **No se ha publicado en GitHub**: no existe repositorio remoto ni autorización para publicar. Cuando se decida, se requiere definir el dueño del repositorio, la visibilidad y la política de datos antes de configurar `origin`.
 
-`.gitignore` excluye el entorno virtual, las cachés y `data.json` para no versionar datos de prueba.
+`.gitignore` excluye el entorno virtual, las cachés, `data.json`, `identidades.json` y la base SQLite local para no versionar datos ni credenciales.
 
 ## 8. Alcance y mejoras futuras
 
-El levantamiento de requisitos incluye asuntos que deben definirse con la universidad: duración máxima del préstamo, anticipación de reservas, quién aprueba/cancela, sanciones, integración con correo/sistema académico y retención histórica. La autenticación real, permisos por rol, notificaciones automáticas, respaldos y despliegue institucional también requieren una siguiente iteración. Se dejaron documentados en `openspec/legacy/prestamos-universidad/design.md` y en `openspec/specs/requisitos-institucionales/spec.md` para no inventar políticas.
+El levantamiento de requisitos incluye asuntos que deben definirse con la universidad: duración máxima del préstamo, anticipación de reservas, quién aprueba/cancela, sanciones, integración con correo/sistema académico y retención histórica. La autenticación local, los permisos por rol y los respaldos verificables ya están implementados (C4 y C5); siguen pendientes SSO institucional, notificaciones automáticas y despliegue. Se dejaron documentados en `openspec/legacy/prestamos-universidad/design.md` y en `openspec/specs/requisitos-institucionales/spec.md` para no inventar políticas.

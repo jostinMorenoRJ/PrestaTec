@@ -21,6 +21,15 @@
       <button data-v="porteria">Portería</button>
       <button data-v="usuarios">Usuarios</button>
     </nav>
+    <div class="sesion">
+      <form id="fl" autocomplete="on">
+        <input name="documento" placeholder="Documento" aria-label="Documento" required>
+        <input name="contraseña" type="password" placeholder="Contraseña" aria-label="Contraseña" required>
+        <button type="submit">Ingresar</button>
+      </form>
+      <span id="quien" class="quien"></span>
+      <button id="salir" class="sec" hidden>Salir</button>
+    </div>
     <a class="report-link" href="/api/reportes/csv"><span>↓</span> Exportar reporte</a>
   </header>
   <main>

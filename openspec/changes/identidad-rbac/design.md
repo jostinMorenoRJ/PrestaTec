@@ -4,7 +4,7 @@
 Un `IdentityProvider` resuelve la identidad de la petición y un `Authorizer`
 centraliza la matriz de permisos. Ambos se inyectan en la capa de aplicación.
 
-## Matriz de permisos (propuesta, pendiente de validación institucional)
+## Matriz de permisos (aprobada para esta iteración)
 
 | Acción | Guarda | Encargado | Soporte | Administrador | Consulta |
 |---|---|---|---|---|---|
@@ -16,8 +16,10 @@ centraliza la matriz de permisos. Ambos se inyectan en la capa de aplicación.
 | Exportar reportes | No | Sí | No | Sí | Sí |
 | Consultar historial | No | Sí | Sí | Sí | Sí |
 
-> La matriz es una propuesta técnica. Si la universidad define otra, se cambia
-> la configuración, no el código de negocio.
+> El usuario aprobó esta matriz como decisión técnica temporal el 2026-11-24,
+> con el mapeo `Estudiante`/`Docente` → `Consulta`. Queda sujeta a confirmación
+> institucional formal. Si la universidad define otra, se cambia la
+> configuración (`Autorizador`), no el código de negocio.
 
 > El endpoint de verificación de portería devuelve solo el resultado mínimo
 > necesario (préstamo válido, equipo, titular y estado), no el historial completo.

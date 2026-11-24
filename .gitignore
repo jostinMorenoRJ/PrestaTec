@@ -3,4 +3,7 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 data.json
+identidades.json
+prestatec.db
+prestatec.db-*
 .DS_Store

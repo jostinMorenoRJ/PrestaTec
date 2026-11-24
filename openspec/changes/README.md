@@ -10,8 +10,8 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 2 | `repositorio-interfaz` | C1 | INT-04 | completado (`a9aef30`) |
 | 3 | `reloj-politicas` | C2 | INST-03; prepara DEC-01..DEC-06 sin resolverlos | completado (`57aaf28`) |
 | 4 | `persistencia-sqlite` | C3 | PDF-RNF04, RES-03 | completado (`170c221`) |
-| 5 | `respaldo-restauracion` | C4 | PDF-RNF04 | en ejecución |
-| 6 | `identidad-rbac` | C5 | PDF-RNF01, RES-02 | pendiente |
+| 5 | `respaldo-restauracion` | C4 | PDF-RNF04 | completado (`88560ef`) |
+| 6 | `identidad-rbac` | C5 | PDF-RNF01, RES-02 | completado (`c70206e`) |
 | 7 | `auditoria` | C6 | RES-03 | pendiente |
 | 8 | `disponibilidad-conflictos` | C7 | INST-03, INST-05, RF03, RF05 | pendiente |
 | 9 | `prestamo-trazable` | C8 | INST-04, RF06, RF07, EXC-02 | pendiente |
@@ -19,7 +19,6 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 11 | `reportes-retencion` | C10 | RF08, RES-03 | pendiente |
 | 12 | `endurecimiento-despliegue` | C11 | PDF-RNF04, PDF-RNF02, DEC-07 | pendiente |
 
-**Estado:** C0–C3 completados con evidencia RED → GREEN → REFACTOR en
-`openspec/ejecucion-c0.md` … `ejecucion-c3.md`. C4 está en ejecución. C5–C11
-permanecen pendientes y requieren autorización/decisiones institucionales
-según cada proposal.
+**Estado:** C0–C5 completados con evidencia RED → GREEN → REFACTOR en
+`openspec/ejecucion-c0.md` … `ejecucion-c5.md`. C6–C11 permanecen pendientes y
+requieren autorización/decisiones institucionales según cada proposal.
