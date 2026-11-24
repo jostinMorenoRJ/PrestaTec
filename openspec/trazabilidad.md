@@ -3,7 +3,7 @@
 Relación verificable entre requisito institucional, especificación OpenSpec,
 prueba pytest (a crear en Etapa 5) e implementación (a partir de Etapa 7).
 
-**Estado:** C0–C5 y C12 ejecutados. La columna "Prueba" conserva el nombre planificado
+**Estado:** C0–C5, C12 y C13 ejecutados. La columna "Prueba" conserva el nombre planificado
 cuando aún no se ha creado; donde existe una prueba real se indica su ruta. La
 columna "Implementación" solo se completa con módulos y commits verificados.
 Los requisitos marcados como *parcial* tienen otros changes pendientes.
@@ -31,8 +31,8 @@ Los requisitos marcados como *parcial* tienen otros changes pendientes.
 | INT-03 No borrar datos | `persistencia-sqlite` (DAT-02/04), `respaldo-restauracion` (DAT-05/06) | `test_DAT02_migracion_mixta_conserva_legacy_y_nuevo`, `test_DAT02_rechaza_sobrescribir_destino_sin_autorizacion`, `test_DAT06_no_purga_copias` | `prestatec/migracion.py` (C3), `prestatec/backup.py` (C4) |
 | INT-04 Separación de capas | `repositorio-interfaz` (ARQ-01) | `tests/test_repositorio.py` (4 pruebas, `a9aef30`) | `prestatec/repository.py`, `prestatec/service.py` (`a9aef30`) |
 | INT-05 Sin botones muertos | `identidad-rbac` (SEC-02) + `perfiles-y-experiencia` (PER-07) | verificación en navegador registrada en `ejecucion-c12.md`; `test_PER07_ui_tres_perfiles_y_disponibilidad` comprueba el enlace de navegación | `static/app.js`, `static/index.html`, `static/styles.css` (C12) |
-| INT-06 Ejecutar pruebas | `gobernanza-linea-base` (GOV-01) | suite completa ejecutada: 19 → 23 → 27 → 35 → 42 → 57 → 72 pruebas | `pyproject.toml`, `openspec/ejecucion-c0.md` … `ejecucion-c5.md`, `ejecucion-c12.md` |
-| INT-07 Git y decisiones | `gobernanza-linea-base` (INT-07) | `git log --oneline`: `8a92475`, `96038a3`, `a9aef30`, `57aaf28`, `170c221`, `88560ef`, `1b25d73`, `9e1af65`, `9eef23d` | repo local inicializado; sin remoto ni publicación (solo commit local) |
+| INT-06 Ejecutar pruebas | `gobernanza-linea-base` (GOV-01) | suite completa ejecutada: 19 → 23 → 27 → 35 → 42 → 57 → 72 → 77 pruebas | `pyproject.toml`, `openspec/ejecucion-c0.md` … `ejecucion-c5.md`, `ejecucion-c12.md`, `ejecucion-c13.md` |
+| INT-07 Git y decisiones | `gobernanza-linea-base` (INT-07) | `git log --oneline`: `8a92475`, `96038a3`, `a9aef30`, `57aaf28`, `170c221`, `88560ef`, `1b25d73`, `9e1af65`, `9eef23d`, `a37fb1d`, `72c98e5` | repo local inicializado; sin remoto ni publicación (solo commit local) |
 | ARC-01/02 Repositorio inyectado | `repositorio-interfaz` | `tests/test_repositorio.py` | `prestatec/repository.py` (`a9aef30`) |
 | ARC-03 Reloj UTC | `reloj-politicas` | `tests/test_reloj.py` (4 pruebas) | `prestatec/reloj.py`, `prestatec/service.py` (`57aaf28`) |
 | ARC-04 Políticas inyectables | `reloj-politicas` | `test_ARC04_politica_sin_valor_no_rechaza_por_duracion` | `prestatec/politicas.py` (`57aaf28`) |
@@ -45,6 +45,10 @@ Los requisitos marcados como *parcial* tienen otros changes pendientes.
 | PER-05 Trazabilidad y reportes | `perfiles-y-experiencia` (PER-05) | `test_PER05_*` (3) | `prestatec/service.py`, `prestatec/web.py` (C12) |
 | PER-06 Compatibilidad JSON | `perfiles-y-experiencia` (PER-06) | `test_PER06_json_mixto_conserva_claves_nuevas` | `prestatec/repository.py` (C12) |
 | PER-07 Calidad de interfaz | `perfiles-y-experiencia` (PER-07) | `test_PER07_ui_tres_perfiles_y_disponibilidad`, verificación en navegador en `ejecucion-c12.md` | `static/` (C12) |
+| ACC-01 Cuentas de demostración | `acceso-y-cuentas-demo` (ACC-01) | `tests/test_acceso.py::test_ACC01_cuentas_reales_inician_sesion_con_su_perfil`, `test_ACC01_estudiante_registrado_puede_reservar` | `identidades.json`, `data.json`, `prestatec/identidad.py` (C13) |
+| ACC-02 Pantalla de acceso | `acceso-y-cuentas-demo` (ACC-02) | `test_ACC02_pantalla_de_acceso_completa_y_no_ventana_vacia` | `static/index.html`, `static/styles.css`, `static/app.js` (C13) |
+| ACC-03 Cuentas visibles | `acceso-y-cuentas-demo` (ACC-03) | `test_ACC03_las_tres_cuentas_aparecen_en_el_acceso` | `static/index.html` (C13) |
+| ACC-04 Errores y accesibilidad | `acceso-y-cuentas-demo` (ACC-04) | `test_ACC04_error_visible_y_campos_etiquetados`, verificación en navegador en `ejecucion-c13.md` | `static/app.js`, `static/index.html`, `static/styles.css` (C13) |
 
 ## Reglas de decisión pendiente
 

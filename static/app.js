@@ -76,7 +76,12 @@ function aplicarPermisos() {
   const config = perfil ? PERFILES[perfil.rol] : null;
   document.body.classList.toggle('sin-sesion', !perfil);
   document.body.classList.toggle('con-sesion', !!perfil);
-  $('#fl').hidden = !!perfil;
+  $('#acceso').hidden = !!perfil;
+  if (!perfil) {
+    $('#error-acceso').hidden = true;
+    $('#error-acceso').textContent = '';
+    $('#usuario').focus();
+  }
   $('#quien').innerHTML = perfil
     ? `<span class="rol-chip rol-${esc(perfil.rol.toLowerCase())}">${esc(perfil.rol)}</span><span>${esc(perfil.nombre)}</span>`
     : '';
@@ -107,12 +112,17 @@ async function iniciar() {
 
 $('#fl').onsubmit = async ev => {
   ev.preventDefault();
+  $('#error-acceso').hidden = true;
   try {
     await api('/auth/login', 'POST', Object.fromEntries(new FormData(ev.target)));
     ev.target.reset();
     await iniciar();
     toast(`Bienvenido, ${perfil?.nombre || ''}`);
-  } catch (e) { toast(msg(e), false); }
+  } catch (e) {
+    $('#error-acceso').textContent = msg(e);
+    $('#error-acceso').hidden = false;
+    toast(msg(e), false);
+  }
 };
 $('#salir').onclick = async () => {
   try { await api('/auth/logout', 'POST', {}); } catch (_e) { /* sesión local */ }

@@ -19,9 +19,11 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 11 | `reportes-retencion` | C10 | RF08, RES-03 | pendiente |
 | 12 | `endurecimiento-despliegue` | C11 | PDF-RNF04, PDF-RNF02, DEC-07 | pendiente |
 | 13 | `perfiles-y-experiencia` | C12 (adicional) | PER-01..PER-07; REFACTOR de defectos P3/P5/P6/P8/P9 | completado (`9eef23d`) |
+| 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`72c98e5`) |
 
-**Estado:** C0–C5 y C12 completados con evidencia RED → GREEN → REFACTOR en
-`openspec/ejecucion-c0.md` … `ejecucion-c5.md` y `ejecucion-c12.md`. C6–C11
-permanecen pendientes y requieren autorización/decisiones institucionales según
-cada proposal. C12 no sustituye a esos changes: solo corrige defectos ya
-documentados y reduce los perfiles según decisión del usuario.
+**Estado:** C0–C5, C12 y C13 completados con evidencia RED → GREEN → REFACTOR en
+`openspec/ejecucion-c0.md` … `ejecucion-c5.md`, `ejecucion-c12.md` y
+`ejecucion-c13.md`. C6–C11 permanecen pendientes y requieren
+autorización/decisiones institucionales según cada proposal. C12 y C13 no
+sustituyen a esos changes: corrigen defectos documentados y aplican decisiones
+del usuario sobre perfiles y acceso local.

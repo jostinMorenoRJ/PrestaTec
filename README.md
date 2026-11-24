@@ -58,7 +58,7 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **72 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 53 de los cambios C1–C5 y C12 (repositorio, reloj, persistencia, configuración, migración, respaldo, restauración, identidad, RBAC, perfiles y experiencia). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **77 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 58 de los cambios C1–C5, C12 y C13 (repositorio, reloj, persistencia, configuración, migración, respaldo, restauración, identidad, RBAC, perfiles, experiencia y acceso). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -86,7 +86,9 @@ Documentos de ejemplo:
 - Docente Omar Díaz: `80123456`
 - Encargada Laura Gómez: `52111222`
 
-Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`. Esto elimina también los registros creados durante la prueba, pero **no** elimina las credenciales de `identidades.json`.
+Además, esta instalación tiene tres usuarios de acceso rápido (C13): `admin`, `celador` y `estudiante`. El último está dado de alta como usuario de negocio para poder solicitar préstamos.
+
+Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`. Esto elimina también los registros creados durante la prueba y los tres usuarios anteriores, pero **no** elimina las credenciales de `identidades.json`. Para recuperarlos, vuelve a registrarlos desde **Usuarios** o ejecuta el script de instalación de C13 guardado en temp.
 
 ### Persistencia opcional (SQLite)
 
@@ -121,17 +123,23 @@ py respaldar.py restaurar backups\data_....manifest.json data.json --confirmar
 
 ### Ingreso y permisos
 
-Toda ruta `/api/...` exige sesión. Antes del primer ingreso crea una credencial con uno de los tres perfiles vigentes:
+Toda ruta `/api/...` exige sesión. La pantalla de acceso muestra las tres cuentas de demostración y sus claves:
+
+| Usuario | Contraseña | Perfil | Vista inicial |
+|---|---|---|---|
+| `admin` | `admin123` | Encargado | Resumen / gestión |
+| `celador` | `celador123` | Guarda | Portería |
+| `estudiante` | `estudiante123` | Consulta | Mis préstamos |
+
+`admin` es `Encargado`: el rol `Administrador` fue eliminado en C12 y no se reincorpora. Si necesitas otra credencial, crea una con un perfil vigente:
 
 ```powershell
 py identificar.py crear 52111222 --rol Encargado
-py identificar.py crear 1001234567 --rol Consulta
-py identificar.py crear guarda-1 --rol Guarda
 ```
 
 La contraseña se solicita por consola (o desde `PRESTATEC_ADMIN_PASSWORD` solo en automatización). Se guarda como hash PBKDF2 con salt en `identidades.json`, archivo ignorado por Git; nunca aparece en `data.json`. Los roles `Administrador` y `Soporte` fueron eliminados en C12: se rechazan al crear credenciales y una credencial heredada con esos roles deja de iniciar sesión. Los archivos existentes no se borran.
 
-En la barra superior escribe el documento y la contraseña. Cada perfil entra en su propia vista (`mis`, `porteria` o `gestion`) y solo ve su navegación:
+Al abrir `http://127.0.0.1:5080` sin sesión se ve una pantalla de acceso completa, no un formulario aislado. Escribe usuario y contraseña y pulsa **Ingresar**; un error se muestra dentro de la tarjeta. Cada perfil entra en su propia vista (`mis`, `porteria` o `gestion`) y solo ve su navegación:
 
 | Acción | Consulta | Guarda | Encargado |
 |---|---|---|---|

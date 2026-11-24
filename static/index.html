@@ -11,7 +11,42 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
+<body class="sin-sesion">
+  <section id="acceso" class="acceso" aria-labelledby="acceso-titulo">
+    <div class="acceso-panel">
+      <div class="acceso-info">
+        <div class="acceso-marca"><span class="brand-mark">P</span><span>Presta<span class="brand-accent">Tec</span></span></div>
+        <span class="eyebrow">ACCESO AL SISTEMA</span>
+        <h1>Todo el inventario.<br><em>Un solo lugar.</em></h1>
+        <p>Administra portátiles y proyectores, controla cada préstamo y mantén los equipos siempre localizables.</p>
+        <ul class="acceso-lista"><li>Inventario y trazabilidad en tiempo real</li><li>Validación rápida en portería</li><li>Un espacio para cada perfil</li></ul>
+        <div class="acceso-pie">SISTEMA ACADÉMICO · USO LOCAL</div>
+      </div>
+      <div class="acceso-tarjeta">
+        <h2 id="acceso-titulo">Iniciar sesión</h2>
+        <p>Ingresa con una de las cuentas de demostración.</p>
+        <form id="fl" autocomplete="on">
+          <label for="usuario">Usuario</label>
+          <input id="usuario" name="documento" placeholder="admin, celador o estudiante" aria-label="Usuario" required>
+          <label for="clave">Contraseña</label>
+          <input id="clave" name="contraseña" type="password" placeholder="Tu contraseña" aria-label="Contraseña" required>
+          <p id="error-acceso" class="error-acceso" role="alert" hidden></p>
+          <button type="submit">Ingresar</button>
+        </form>
+        <div class="acceso-cuentas">
+          <span class="eyebrow">CUENTAS DE DEMOSTRACIÓN · SOLO LOCAL</span>
+          <table>
+            <thead><tr><th>Perfil</th><th>Usuario</th><th>Contraseña</th></tr></thead>
+            <tbody>
+              <tr><td>Encargado</td><td>admin</td><td>admin123</td></tr>
+              <tr><td>Guarda</td><td>celador</td><td>celador123</td></tr>
+              <tr><td>Consulta</td><td>estudiante</td><td>estudiante123</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
   <header class="topbar">
     <a class="brand" href="#inicio" aria-label="PrestaTec inicio"><span class="brand-mark">P</span><span>Presta<span class="brand-accent">Tec</span><small>GESTIÓN DE EQUIPOS</small></span></a>
     <nav aria-label="Navegación principal">
@@ -23,11 +58,6 @@
       <button data-v="usuarios">Usuarios</button>
     </nav>
     <div class="sesion">
-      <form id="fl" autocomplete="on">
-        <input name="documento" placeholder="Documento" aria-label="Documento" required>
-        <input name="contraseña" type="password" placeholder="Contraseña" aria-label="Contraseña" required>
-        <button type="submit">Ingresar</button>
-      </form>
       <span id="quien" class="quien"></span>
       <button id="salir" class="sec" hidden>Salir</button>
     </div>
