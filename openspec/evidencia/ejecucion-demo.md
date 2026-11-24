@@ -1,24 +1,24 @@
-# Ejecución del tercer ciclo — acceso usable en el primer arranque
+﻿# EjecuciÃ³n del tercer ciclo â€” acceso usable en el primer arranque
 
 **Fecha:** 24 de noviembre de 2026
 **Commit de spec:** `54c5d08`
 **Commit RED:** `89b6938`
-**Commit GREEN:** `4ab6f17` — etiqueta `demo-acceso-inicial`
+**Commit GREEN:** `4ab6f17` â€” etiqueta `demo-acceso-inicial`
 
 ## Problema verificado
 
 En un clon limpio, `python run.py` mostraba `admin` / `admin123` en la
-pantalla de acceso, pero el login devolvía `401 Credenciales inválidas.`:
-`identidades.json` está fuera de Git y `estudiante` no existía como usuario de
-negocio. Las cuentas solo se podían crear con un comando explicado más abajo en
-el README, así que el primer intento del evaluador fallaba.
+pantalla de acceso, pero el login devolvÃ­a `401 Credenciales invÃ¡lidas.`:
+`identidades.json` estÃ¡ fuera de Git y `estudiante` no existÃ­a como usuario de
+negocio. Las cuentas solo se podÃ­an crear con un comando explicado mÃ¡s abajo en
+el README, asÃ­ que el primer intento del evaluador fallaba.
 
 ## 1. Spec
 
 `openspec/changes/demo-acceso-inicial/` con `proposal.md`, `design.md`,
-`tasks.md` y el delta `specs/acceso/spec.md` (DEMO-01..04). Sin tocar código ni
-pruebas. La preparación es **opt-in**: no se crean cuentas con claves conocidas
-de forma automática y silenciosa.
+`tasks.md` y el delta `specs/acceso/spec.md` (DEMO-01..04). Sin tocar cÃ³digo ni
+pruebas. La preparaciÃ³n es **opt-in**: no se crean cuentas con claves conocidas
+de forma automÃ¡tica y silenciosa.
 
 ## 2. RED
 
@@ -42,7 +42,7 @@ Causa: `ModuleNotFoundError: No module named 'prestatec.demo'`.
 
 - `prestatec/demo.py`: `preparar_demo(servicio, almacen)` crea solo lo que
   falta, usando los objetos ya construidos por la app.
-- `crear_demo.py`: CLI dedicada, sin iniciar el servidor.
+- `scripts/crear_demo.py`: CLI dedicada, sin iniciar el servidor.
 - `run.py --demo`: prepara y luego sirve. `python run.py` sin bandera **no crea
   nada**.
 
@@ -51,13 +51,13 @@ tests/test_demo.py: 4 passed in 1.40s
 suite completa:      85 passed in 8.81s
 ```
 
-Verificación adicional del flujo real: con `run.py --demo` sobre archivos
+VerificaciÃ³n adicional del flujo real: con `run.py --demo` sobre archivos
 temporales se crearon las tres credenciales y el usuario `estudiante`; luego un
-`POST /api/auth/login` HTTP real con `admin` / `admin123` devolvió **200** y un
-token. (Un primer intento con PowerShell devolvió 401 por codificar mal la `ñ`
-de `contraseña`; repetido con Python y UTF-8 explícito, 200.)
+`POST /api/auth/login` HTTP real con `admin` / `admin123` devolviÃ³ **200** y un
+token. (Un primer intento con PowerShell devolviÃ³ 401 por codificar mal la `Ã±`
+de `contraseÃ±a`; repetido con Python y UTF-8 explÃ­cito, 200.)
 
-## 4. Cómo mostrarlo
+## 4. CÃ³mo mostrarlo
 
 ```powershell
 git show 54c5d08 -- openspec/changes/demo-acceso-inicial
