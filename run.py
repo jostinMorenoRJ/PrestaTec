@@ -1,7 +1,9 @@
-"""Punto de entrada: python run.py"""
+"""Punto de entrada: python run.py [--demo]"""
+import argparse
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+from prestatec.demo import preparar_demo
 from prestatec.web import PrestaTecApp
 
 
@@ -47,6 +49,23 @@ def crear_handler(aplicacion):
 
 
 if __name__ == '__main__':
+    analizador = argparse.ArgumentParser(description='PrestaTec 2.0')
+    analizador.add_argument(
+        '--demo', action='store_true',
+        help='crea de forma explícita las cuentas de demostración antes de servir',
+    )
+    args = analizador.parse_args()
+
+    if args.demo:
+        creados = preparar_demo(
+            servicio=app.service, almacen=app.identidad.almacen
+        )
+        print(
+            '  Demo preparada. Credenciales creadas: '
+            f"{', '.join(creados['credenciales']) or 'ninguna'}. "
+            f"Usuarios creados: {', '.join(creados['usuarios']) or 'ninguno'}."
+        )
+
     print(
         '\n  PrestaTec está listo: http://127.0.0.1:5080\n'
         '  Para detenerlo, presiona Ctrl + C.\n'
