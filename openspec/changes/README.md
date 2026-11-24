@@ -5,8 +5,9 @@ reescritos: gobernanza → abstracción de datos → seguridad → funcionalidad
 despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 
 **Ubicación:** los changes terminados (filas 1–6, 13 y 14) están en
-`archive/`; en la raíz quedan los pendientes (7–12) y los tres ciclos del
-núcleo (15–17), que son los que interesan para la entrega.
+`archive/`; en la raíz quedan los pendientes (7–12) y los tres ciclos formales
+(15–17): dos del núcleo de préstamo y uno de acceso. Son los que interesan para
+la entrega.
 
 | Orden | Change | IDs del plan | Requisitos atendidos | Estado |
 |---|---|---|---|---|
@@ -31,7 +32,7 @@ núcleo (15–17), que son los que interesan para la entrega.
 **Estado:** C0–C5, C12, C13 y los tres changes principales —dos del núcleo de
 préstamo (`devolucion-responsable`, `devolucion-unica`) y uno de acceso
 (`demo-acceso-inicial`)— completados con evidencia
-RED → GREEN → REFACTOR en `openspec/evidencia/ejecucion-c0.md` … `ejecucion-c5.md`,
+Spec → RED → GREEN (y REFACTOR en DUP) en `openspec/evidencia/ejecucion-c0.md` … `ejecucion-c5.md`,
 `ejecucion-c12.md`, `ejecucion-c13.md`, `ejecucion-nucleo-dev.md`,
 `ejecucion-devolucion-unica.md` y `ejecucion-demo.md`. El núcleo (`service.py` y
 `test_prestamos.py`) proviene de la línea base `8a92475`, documentada en
