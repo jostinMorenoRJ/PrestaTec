@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PrestaTec: ejecutar pruebas",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} -m pytest -v",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "PrestaTec: iniciar servidor",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} run.py",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

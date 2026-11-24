@@ -1,0 +1,3 @@
+# El sistema funciona con la biblioteca estándar de Python.
+# pytest solo es necesario para ejecutar las pruebas.
+pytest>=8.0,<10.0

@@ -1,0 +1,20 @@
+[project]
+name = "prestatec"
+version = "2.0.0-dev"
+description = "Sistema universitario de gestion de prestamos de computadores portatiles y proyectores"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers -ra"
+markers = [
+    "unit: reglas puras de dominio",
+    "integration: integracion entre capas, HTTP y persistencia",
+    "acceptance: criterios de aceptacion de requisitos institucionales",
+    "nfr: requisitos no funcionales (seguridad, SLA, resiliencia)",
+    "characterization: comportamiento observado en la linea base, incluidos defectos conocidos",
+]

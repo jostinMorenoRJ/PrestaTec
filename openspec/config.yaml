@@ -1,0 +1,23 @@
+version: 1
+name: PrestaTec 2.0
+language: es
+context: |
+  Sistema universitario para la gestión de inventario, usuarios, préstamos,
+  devoluciones, disponibilidad y validación en portería de computadores
+  portátiles y proyectores. Python continúa siendo el núcleo de la lógica
+  de negocio.
+  Fuentes_normativas:
+    - TALLER Requisitos.pdf (RF01-RF09, RNF01-RNF04, secciones 5.4 y 5.5)
+    - AGENTS.md.txt (reglas internas obligatorias de metodología y datos)
+    - Diagnóstico de la Etapa 1 (12 pruebas passing, línea base verificada)
+rules:
+  specs:
+    - Todo requisito debe incluir escenarios verificables DADO / CUANDO / ENTONCES.
+    - Los requisitos institucionales prevalecen sobre cualquier mejora propuesta.
+    - No se definen reglas de negocio dependientes de decisiones pendientes sin aprobación formal.
+    - Toda funcionalidad requiere una prueba pytest creada y ejecutada en RED antes de implementarse.
+    - La trazabilidad Requisito -> Especificacion -> Prueba -> Implementacion es obligatoria.
+  changes:
+    - Cada change debe ser pequeño, reversible y verificable de forma independiente.
+    - Cada change referencia los IDs de requisitos que añade o modifica.
+    - El orden de ejecución debe reducir riesgos: gobernanza, datos, seguridad, funcionalidad, despliegue.
