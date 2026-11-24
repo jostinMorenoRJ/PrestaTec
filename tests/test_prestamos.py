@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 import pytest
 
+from prestatec.identidad import Identidad
 from prestatec.service import InventoryService, BusinessError
 
 
@@ -97,3 +98,34 @@ def test_importa_datos_del_proyecto_base_en_formato_csharp(tmp_path):
     sistema = InventoryService(ruta, seed=False)
     assert sistema.listar_equipos()[0]["id"] == "PT-009"
     assert sistema.listar_equipos()[0]["nombre"] == "Equipo legado"
+
+
+def test_DEV01_devolver_registra_responsable_explicito(sistema):
+    usuario, equipo = registrar_base(sistema)
+    inicio = datetime.now() - timedelta(minutes=1)
+    fin = datetime.now() + timedelta(hours=2)
+    prestamo = sistema.crear_prestamo(equipo["id"], usuario["documento"], inicio, fin)
+    sistema.entregar(prestamo["id"], "Encargada", "Bueno")
+
+    devuelto = sistema.devolver(
+        prestamo["id"], False, "", responsable_devolucion="Celador Méndez"
+    )
+
+    assert devuelto["responsableDevolucion"] == "Celador Méndez"
+    assert any(
+        "Celador Méndez" in evento["texto"]
+        for evento in sistema.historial_equipo(equipo["id"])
+    )
+
+
+def test_DEV02_devolver_toma_el_responsable_de_la_sesion(sistema):
+    actor = Identidad(id="A-001", nombre="Guarda Ruiz", rol="Guarda", documento="900001")
+    usuario, equipo = registrar_base(sistema)
+    inicio = datetime.now() - timedelta(minutes=1)
+    fin = datetime.now() + timedelta(hours=2)
+    prestamo = sistema.crear_prestamo(equipo["id"], usuario["documento"], inicio, fin)
+    sistema.entregar(prestamo["id"], "Encargada", "Bueno")
+
+    devuelto = sistema.devolver(prestamo["id"], False, "", actor=actor)
+
+    assert devuelto["responsableDevolucion"] == "Guarda Ruiz"
