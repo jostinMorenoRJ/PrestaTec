@@ -21,5 +21,5 @@
 - [x] REFACTOR: interfaz con inicio/cierre de sesión y ocultación de acciones
       según permisos; verificado en navegador con roles `Administrador` y `Guarda`.
 - [x] REFACTOR: suite completa **57 passed in 4.34s**.
-- [x] Registrar evidencia en `openspec/ejecucion-c5.md`.
+- [x] Registrar evidencia en `openspec/evidencia/ejecucion-c5.md`.
 - [x] Commit `feat: identidad y control de acceso (C5)` (ver `git log`).

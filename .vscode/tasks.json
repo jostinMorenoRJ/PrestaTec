@@ -11,20 +11,26 @@
     {
       "label": "PrestaTec: iniciar servidor",
       "type": "shell",
-      "command": "${command:python.interpreterPath} run.py",
+      "command": "${command:python.interpreterPath} run.py --demo",
       "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "PrestaTec: preparar cuentas de demostración",
+      "type": "shell",
+      "command": "${command:python.interpreterPath} scripts/crear_demo.py",
       "problemMatcher": []
     },
     {
       "label": "PrestaTec: migrar data.json a SQLite",
       "type": "shell",
-      "command": "${command:python.interpreterPath} migrar.py",
+      "command": "${command:python.interpreterPath} scripts/migrar.py",
       "problemMatcher": []
     },
     {
       "label": "PrestaTec: crear respaldo verificable",
       "type": "shell",
-      "command": "${command:python.interpreterPath} respaldar.py crear data.json",
+      "command": "${command:python.interpreterPath} scripts/respaldar.py crear data.json",
       "problemMatcher": []
     }
   ]

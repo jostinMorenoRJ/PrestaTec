@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from identificar import main as identificar_main
+from scripts.identificar import main as identificar_main
 from prestatec.errors import BusinessError
 from prestatec.identidad import Identidad
 from prestatec.service import InventoryService

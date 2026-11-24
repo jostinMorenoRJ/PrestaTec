@@ -4,6 +4,10 @@ Cada change es un incremento pequeño, reversible y verificable. El orden evita
 reescritos: gobernanza → abstracción de datos → seguridad → funcionalidad →
 despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 
+**Ubicación:** los changes terminados (filas 1–6, 13 y 14) están en
+`archive/`; en la raíz quedan los pendientes (7–12) y los tres ciclos del
+núcleo (15–17), que son los que interesan para la entrega.
+
 | Orden | Change | IDs del plan | Requisitos atendidos | Estado |
 |---|---|---|---|---|
 | 1 | `gobernanza-linea-base` | C0 | INT-01..INT-07 | completado (`8a92475`, `96038a3`) |
@@ -22,12 +26,13 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`2be8cd9`) |
 | 15 | `devolucion-responsable` | Núcleo (RF06) | DEV-01..DEV-04; responsable de la devolución | completado (`a76091e` → `9fc38c1` → `9695bde`) |
 | 16 | `devolucion-unica` | Núcleo (RF06) | DUP-01..DUP-03; segunda devolución rechazada | completado (`131d82c` → `d002ae0` → `6907506`) |
+| 17 | `demo-acceso-inicial` | Núcleo (acceso) | DEMO-01..DEMO-04; login usable en el primer arranque | completado (`54c5d08` → `89b6938` → `4ab6f17`) |
 
-**Estado:** C0–C5, C12, C13 y los dos changes del núcleo
-(`devolucion-responsable` y `devolucion-unica`) completados con evidencia
-RED → GREEN → REFACTOR en `openspec/ejecucion-c0.md` … `ejecucion-c5.md`,
-`ejecucion-c12.md`, `ejecucion-c13.md`, `ejecucion-nucleo-dev.md` y
-`ejecucion-devolucion-unica.md`. El núcleo (`service.py` y
+**Estado:** C0–C5, C12, C13 y los tres changes del núcleo
+(`devolucion-responsable`, `devolucion-unica` y `demo-acceso-inicial`) completados con evidencia
+RED → GREEN → REFACTOR en `openspec/evidencia/ejecucion-c0.md` … `ejecucion-c5.md`,
+`ejecucion-c12.md`, `ejecucion-c13.md`, `ejecucion-nucleo-dev.md`,
+`ejecucion-devolucion-unica.md` y `ejecucion-demo.md`. El núcleo (`service.py` y
 `test_prestamos.py`) proviene de la línea base `8a92475`, documentada en
 `openspec/legacy/`; los dos cambios anter son los ciclos formales aplicados
 desde ahí, sin reescritura del historial. C6–C11 permanecen pendientes y

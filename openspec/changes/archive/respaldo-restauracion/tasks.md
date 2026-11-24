@@ -11,5 +11,5 @@
       y documentación en `README.md`.
 - [x] REFACTOR: verificar que ninguna copia se purga (3 copias → 6 archivos).
 - [x] Suite completa: **42 passed in 0.96s**.
-- [x] Registrar evidencia en `openspec/ejecucion-c4.md`.
+- [x] Registrar evidencia en `openspec/evidencia/ejecucion-c4.md`.
 - [x] Commit `feat: respaldo y restauracion verificable (C4)` (ver `git log`).

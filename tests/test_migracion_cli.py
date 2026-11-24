@@ -8,7 +8,7 @@ from prestatec.sqlite_repository import SQLiteRepository
 
 
 def test_cli_migracion_crea_respaldo_y_base(tmp_path, capsys):
-    from migrar import main
+    from scripts.migrar import main
 
     origen = tmp_path / 'data.json'
     destino = tmp_path / 'prestatec.db'

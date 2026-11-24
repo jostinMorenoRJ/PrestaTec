@@ -39,4 +39,4 @@
 
 - [x] Commit `feat: persistencia sqlite con migracion segura (C3)` (ver `git log`).
 
-> Evidencia detallada en `openspec/ejecucion-c3.md`.
+> Evidencia detallada en `openspec/evidencia/ejecucion-c3.md`.

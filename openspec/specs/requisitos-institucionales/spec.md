@@ -7,7 +7,7 @@ prueba pytest correspondiente.
 
 > Los estados `Verificado`, `Parcial` e `Incumplido` describen la **línea base de
 > la Etapa 1**, no un estado final. Las 12 pruebas originales tienen otros nombres;
-> las pruebas con prefijo `INST-##` de `openspec/trazabilidad.md` se crearán en la
+> las pruebas con prefijo `INST-##` de `openspec/evidencia/trazabilidad.md` se crearán en la
 > Etapa 5 y deberán pasar en RED→GREEN antes de marcar el requisito como terminado.
 
 ## Convención de IDs

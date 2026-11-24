@@ -11,7 +11,7 @@ fueron de documentación OpenSpec.
 | # | Hallazgo | Corrección aplicada |
 |---|---|---|
 | R1 | `PDF-RNF02` incluía una meta inventada de "<1 s para consultas comunes", no exigida por el taller. | Eliminada del criterio de aceptación. Solo se mide el SLA de portería (<3 s). Se creó `DEC-09` para documentar que no hay umbral para otras operaciones. |
-| R2 | `identidad-rbac` añadía SEC-01..04 pero no declaraba la modificación de `RF01` ("usuarios autorizados" por el hecho de estar registrados). | Nuevo `changes/identidad-rbac/specs/prestamos/spec.md` con `MODIFIED RF01` y dos escenarios (`401` anónimo, `403` sin permiso). |
+| R2 | `identidad-rbac` añadía SEC-01..04 pero no declaraba la modificación de `RF01` ("usuarios autorizados" por el hecho de estar registrados). | Nuevo `changes/archive/identidad-rbac/specs/prestamos/spec.md` con `MODIFIED RF01` y dos escenarios (`401` anónimo, `403` sin permiso). |
 | R3 | El índice de changes decía que `reloj-politicas` atendía `DEC-01..DEC-06`, cuando solo prepara contenedores sin resolverlos. | Reformulado: "prepara DEC-01..DEC-06 sin resolverlos". |
 | R4 | `POR-01` prometía medir "respuesta visible" con pytest, lo que incluiría render de navegador y lector físico (no verificable con pytest por sí solo). | Reformulado: pytest mide petición/respuesta de API; render y hardware quedan documentados como limitación ligada a `DEC-07`. Escenario renombrado a "medición automatizada". |
 | R5 | `reportes-retencion` citaba `O2` para PDF/Excel, pero `O2` corresponde a sanciones. | Corregido a `FUN-A2`. |

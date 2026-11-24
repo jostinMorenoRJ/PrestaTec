@@ -15,5 +15,5 @@
       caracterizaciones de defectos corregidos.
 - [x] Ejecutar suite completa (72 pruebas en verde) y verificación en navegador
       de los tres perfiles; corregido el botón de navegación sin controlador.
-- [x] Documentar en `openspec/ejecucion-c12.md`, `README.md` y trazabilidad.
+- [x] Documentar en `openspec/evidencia/ejecucion-c12.md`, `README.md` y trazabilidad.
 - [x] Commit local `9eef23d`; publicado después en `main` con el resto del historial.

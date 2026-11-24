@@ -7,5 +7,5 @@
 - [x] REFACTOR: eliminar `datetime.now()` del dominio y reescribir `resumen()`.
 - [x] Ejecutar suite completa: **27 passed**.
 - [x] Documentar que los valores de política siguen pendientes de DEC-01..DEC-06.
-- [x] Registrar evidencia en `openspec/ejecucion-c2.md`.
+- [x] Registrar evidencia en `openspec/evidencia/ejecucion-c2.md`.
 - [x] Commit `refactor: reloj y politicas inyectables (C2)` — `57aaf28` (verificado en `git log`).

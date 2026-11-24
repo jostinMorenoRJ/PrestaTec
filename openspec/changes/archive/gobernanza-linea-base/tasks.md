@@ -9,7 +9,7 @@
 - [x] Crear `AGENTS.md` a partir de `AGENTS.md.txt` y documentar la decisión.
 - [x] Crear `tests/characterization/test_estado_actual.py` (7 pruebas).
 - [x] Ejecutar la suite completa: **19 passed in 0.39s**.
-- [x] Registrar evidencia y limitaciones en `openspec/ejecucion-c0.md`.
+- [x] Registrar evidencia y limitaciones en `openspec/evidencia/ejecucion-c0.md`.
 
 - [x] Instalar Git 2.56.1 con autorización explícita (`winget`, paquete `Git.Git`).
 - [x] Inicializar repositorio Git en el workspace.

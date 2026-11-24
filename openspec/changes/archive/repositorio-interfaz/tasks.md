@@ -8,5 +8,5 @@
 - [x] REFACTOR: eliminar imports de `json`/`Path` de los casos de uso; anotar el contrato.
 - [x] Ejecutar suite completa + caracterización: **23 passed**.
 - [x] Verificar que `data.json` no cambió de formato (ARQ-02).
-- [x] Registrar evidencia en `openspec/ejecucion-c1.md`.
+- [x] Registrar evidencia en `openspec/evidencia/ejecucion-c1.md`.
 - [x] Commit `refactor: repositorio sobre JSON (C1)` — `a9aef30` (verificado en `git log`).

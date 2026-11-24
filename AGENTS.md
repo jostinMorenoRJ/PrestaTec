@@ -41,8 +41,8 @@ No comenzar a programar una funcionalidad hasta que:
 - Las especificaciones viven en `openspec/specs/`.
 - Cada incremento se documenta en `openspec/changes/<id>/` con `proposal.md`,
   `design.md`, `tasks.md` y el delta de spec correspondiente.
-- `openspec/trazabilidad.md` relaciona requisito, spec, prueba e implementación.
-- `openspec/revision-etapa4.md` registra las decisiones de revisión.
+- `openspec/evidencia/trazabilidad.md` relaciona requisito, spec, prueba e implementación.
+- `openspec/evidencia/revision-etapa4.md` registra las decisiones de revisión.
 - Los documentos originales del ZIP se conservan en `openspec/legacy/`.
 - Una prueba de caracterización documenta el comportamiento actual, incluso si
   es defectuoso; NO debe confundirse con un criterio de aceptación definitivo.

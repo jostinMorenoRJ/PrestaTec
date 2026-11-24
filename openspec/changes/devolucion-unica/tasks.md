@@ -20,4 +20,4 @@
 | Prueba de clarificación | `513209a` |
 
 Etiqueta del ciclo: `devolucion-unica` (sobre el GREEN).
-Detalle en `openspec/ejecucion-devolucion-unica.md`.
+Detalle en `openspec/evidencia/ejecucion-devolucion-unica.md`.

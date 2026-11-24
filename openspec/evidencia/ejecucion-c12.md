@@ -2,8 +2,8 @@
 
 **Fecha:** 2026-11-24
 **Commit:** `9eef23d` (implementación), `docs:` (referencias de trazabilidad)
-**Change:** `openspec/changes/perfiles-y-experiencia/`
-**Spec:** `openspec/changes/perfiles-y-experiencia/specs/perfiles/spec.md` (PER-01..PER-07)
+**Change:** `openspec/changes/archive/perfiles-y-experiencia/`
+**Spec:** `openspec/changes/archive/perfiles-y-experiencia/specs/perfiles/spec.md` (PER-01..PER-07)
 **Decisiones del usuario:** tres roles (`Consulta`, `Guarda`, `Encargado`),
 eliminación de `Administrador`/`Soporte`, reserva solo para el documento propio
 y commit local sin push.

@@ -1,7 +1,7 @@
 """SEC-03 / PER-01: alta explícita de credenciales sin texto plano ni sobrescritura."""
 import json
 
-from identificar import main
+from scripts.identificar import main
 
 
 def test_cli_crea_credencial_hash_y_no_guarda_plano(tmp_path, monkeypatch):

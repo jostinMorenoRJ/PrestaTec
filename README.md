@@ -71,11 +71,11 @@ Todo lo demás no exigido por el enunciado mínimo: autenticación y permisos
 (`prestatec/identidad.py`), repositorio inyectado y SQLite
 (`prestatec/repository.py`, `prestatec/migracion.py`), respaldos verificables
 (`prestatec/backup.py`), perfiles e interfaz (`static/`), cuentas de
-demostración C13, evidencias en `openspec/ejecucion-*.md` y el informe Word en
+demostración C13, evidencias en `openspec/evidencia/ejecucion-*.md` y el informe Word en
 `documentacion/`. Cada extra tiene su propuesta en `openspec/changes/` y se
 puede ignorar sin afectar al núcleo.
 
-**Qué se puede ignorar al revisar:** los `openspec/ejecucion-c0.md` …
+**Qué se puede ignorar al revisar:** los `openspec/evidencia/ejecucion-c0.md` …
 `ejecucion-c13.md` y los changes C0–C13 son evidencia e incrementos previos, no
 hacen falta para entender ni ejecutar lo pedido. Los tres sitios que importan
 son `openspec/specs/prestamos/spec.md`, `openspec/changes/devolucion-responsable/`

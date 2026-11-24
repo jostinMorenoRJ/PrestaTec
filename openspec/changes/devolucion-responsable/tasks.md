@@ -16,4 +16,4 @@
 | Test (RED) | `9fc38c1` | `nucleo-2-red` |
 | Código (GREEN) | `9695bde` | `nucleo-3-green` |
 
-El detalle de comandos y salidas está en `openspec/ejecucion-nucleo-dev.md`.
+El detalle de comandos y salidas está en `openspec/evidencia/ejecucion-nucleo-dev.md`.

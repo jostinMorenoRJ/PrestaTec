@@ -2,8 +2,8 @@
 
 **Fecha:** 2026-11-24
 **Commit:** `2be8cd9` (implementación), `docs:` (referencias de trazabilidad)
-**Change:** `openspec/changes/acceso-y-cuentas-demo/`
-**Spec:** `openspec/changes/acceso-y-cuentas-demo/specs/acceso/spec.md` (ACC-01..ACC-04)
+**Change:** `openspec/changes/archive/acceso-y-cuentas-demo/`
+**Spec:** `openspec/changes/archive/acceso-y-cuentas-demo/specs/acceso/spec.md` (ACC-01..ACC-04)
 **Decisión del usuario:** `admin`/`admin123` → Encargado, `celador`/`celador123`
 → Guarda, `estudiante`/`estudiante123` → Consulta; además, cambiar el front de
 inicio de sesión porque parecía una ventana vacía.

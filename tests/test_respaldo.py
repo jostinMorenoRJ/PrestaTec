@@ -136,7 +136,7 @@ def test_DAT06_copia_sqlite_corrupta_se_rechaza(tmp_path):
 
 
 def test_cli_backup_y_restore(tmp_path, capsys):
-    from respaldar import main
+    from scripts.respaldar import main
 
     origen = tmp_path / 'data.json'
     original = estado_demo()
