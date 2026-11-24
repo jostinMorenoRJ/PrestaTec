@@ -2,6 +2,40 @@
 
 Aplicación web local desarrollada en Python. Permite administrar inventario, usuarios, reservas, entregas, devoluciones, daños, historial y validación rápida en portería. La interfaz está diseñada como un panel tipo landing page y funciona en el navegador.
 
+## Núcleo pedido
+
+| Lo solicitado | Dónde encontrarlo |
+|---|---|
+| **Especificación (SDD)** | `openspec/specs/prestamos/spec.md` (RF01–RF09) y el delta `openspec/changes/devolucion-responsable/specs/prestamos/spec.md` (RF06a) |
+| **Pruebas (pytest)** | `tests/test_prestamos.py` — 11 pruebas de registro, préstamo, devolución, disponibilidad, daño, portería y persistencia |
+| **Programa Python** | `prestatec/service.py` — `InventoryService`: `registrar_equipo`, `registrar_usuario`, `crear_prestamo`, `entregar`, `devolver`, `listar_equipos` |
+
+**Ciclo Spec → Test → Código verificable en el historial:**
+
+| Paso | Commit | Etiqueta |
+|---|---|---|
+| Spec (antes de la prueba) | `a76091e` | `nucleo-1-spec` |
+| Prueba RED — 2 fallos, 77 en verde | `9fc38c1` | `nucleo-2-red` |
+| Código GREEN — 79 en verde | `9695bde` | `nucleo-3-green` |
+
+```powershell
+git log --oneline --decorate -4
+git show 9fc38c1    # la prueba todavía falla
+git show 9695bde    # la implementación que la hace pasar
+```
+
+Etiqueta general del entregable: `nucleo`.
+
+## Extras opcionales
+
+Todo lo demás no exigido por el enunciado mínimo: autenticación y permisos
+(`prestatec/identidad.py`), repositorio inyectado y SQLite
+(`prestatec/repository.py`, `prestatec/migracion.py`), respaldos verificables
+(`prestatec/backup.py`), perfiles e interfaz (`static/`), cuentas de
+demostración C13, evidencias en `openspec/ejecucion-*.md` y el informe Word en
+`documentacion/`. Cada extra tiene su propuesta en `openspec/changes/` y se
+puede ignorar sin afectar al núcleo.
+
 ## 1. Requisitos
 
 - Python 3.10 o superior.
@@ -58,7 +92,14 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **77 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 58 de los cambios C1–C5, C12 y C13 (repositorio, reloj, persistencia, configuración, migración, respaldo, restauración, identidad, RBAC, perfiles, experiencia y acceso). Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **79 pruebas**: las 77 anteriores (dominio y HTTP, caracterización y cambios C1–C5, C12 y C13) más las 2 del ciclo `DEV-01`/`DEV-02` del núcleo. Las de caracterización documentan el comportamiento real: en C5 se actualizó la de acceso anónimo y en C12 las de los defectos P3/P6/P8/P9 corregidos por spec. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+
+Para ver solo el ciclo Spec → Test → Código del núcleo:
+
+```powershell
+py -m pytest tests/test_prestamos.py -v
+```
+
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -88,7 +129,18 @@ Documentos de ejemplo:
 
 Además, esta instalación tiene tres usuarios de acceso rápido (C13): `admin`, `celador` y `estudiante`. El último está dado de alta como usuario de negocio para poder solicitar préstamos.
 
-Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`. Esto elimina también los registros creados durante la prueba y los tres usuarios anteriores, pero **no** elimina las credenciales de `identidades.json`. Para recuperarlos, vuelve a registrarlos desde **Usuarios** o ejecuta el script de instalación de C13 guardado en temp.
+**Decisión sobre datos:** `data.json` e `identidades.json` se mantienen fuera de Git (`.gitignore`) a propósito. `data.json` se regenera solo con equipos y usuarios de ejemplo, sin credenciales; los hashes PBKDF2 y sus salts viven en `identidades.json`. El ZIP `PrestaTec_2.0_entrega_20261124.zip`, incluido en la raíz del repositorio, trae ambos archivos ya poblados con los seis equipos, los cuatro usuarios base, los tres usuarios de acceso y sus credenciales: extráelo sobre la carpeta para arrancar con la demostración completa. Si prefieres recrear solo las credenciales:
+
+```powershell
+$env:PRESTATEC_ADMIN_PASSWORD='admin123'
+py identificar.py crear admin --rol Encargado
+$env:PRESTATEC_ADMIN_PASSWORD='celador123'
+py identificar.py crear celador --rol Guarda
+$env:PRESTATEC_ADMIN_PASSWORD='estudiante123'
+py identificar.py crear estudiante --rol Consulta
+```
+
+`estudiante` también debe existir como usuario de negocio para poder reservar; se da de alta en **Usuarios** con documento `estudiante` (el ZIP ya lo incluye). Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`: eso borra préstamos y usuarios de prueba, pero no toca `identidades.json`.
 
 ### Persistencia opcional (SQLite)
 
@@ -175,16 +227,16 @@ La especificación está en `openspec/` y las pruebas están en `tests/`. El ord
 
 ## 7. Control de versiones
 
-El repositorio Git **ya está inicializado** en esta carpeta y contiene el commit de línea base `8a92475 chore: linea base y gobernanza (C0)`. Para ver el historial:
+El código está publicado en **https://github.com/jostinMorenoRJ/PrestaTec.git**, rama `main`. El historial completo empieza en el commit de línea base `8a92475 chore: linea base y gobernanza (C0)` y termina en el estado marcado con la etiqueta `nucleo`. Para verlo:
 
 ```powershell
-git log --oneline
+git log --oneline --decorate
 git status
+git show nucleo-2-red    # prueba antes del código
+git show nucleo-3-green  # código que la hace pasar
 ```
 
-**No se ha publicado en GitHub**: no existe repositorio remoto ni autorización para publicar. Cuando se decida, se requiere definir el dueño del repositorio, la visibilidad y la política de datos antes de configurar `origin`.
-
-`.gitignore` excluye el entorno virtual, las cachés, `data.json`, `identidades.json` y la base SQLite local para no versionar datos ni credenciales.
+`.gitignore` excluye el entorno virtual, las cachés, `data.json`, `identidades.json` y la base SQLite local para no versionar datos ni credenciales. Las contraseñas de demostración aparecen en este README y en el informe Word; si el repositorio va a ser público, hazlo privado o retíralas antes de compartirlo.
 
 ## 8. Alcance y mejoras futuras
 

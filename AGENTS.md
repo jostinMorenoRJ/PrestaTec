@@ -1,8 +1,7 @@
 # Reglas generales del proyecto PrestaTec 2.0
 
-> Este archivo sustituye en la raíz a `AGENTS.md.txt`, que se conserva como
-> histórico. Las reglas originales se mantienen íntegramente y se complementa
-> la sección de OpenSpec y trazabilidad.
+> Reglas originales completas, complementadas con la sección de OpenSpec y
+> trazabilidad. Es el único archivo de reglas en la raíz.
 
 ## Objetivo
 Modernizar el sistema universitario de préstamos de computadores portátiles y proyectores.

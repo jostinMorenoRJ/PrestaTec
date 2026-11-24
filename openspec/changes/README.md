@@ -20,10 +20,12 @@ despliegue. Los IDs `C0`..`C11` corresponden al plan priorizado de la Etapa 1.
 | 12 | `endurecimiento-despliegue` | C11 | PDF-RNF04, PDF-RNF02, DEC-07 | pendiente |
 | 13 | `perfiles-y-experiencia` | C12 (adicional) | PER-01..PER-07; REFACTOR de defectos P3/P5/P6/P8/P9 | completado (`9eef23d`) |
 | 14 | `acceso-y-cuentas-demo` | C13 (adicional) | ACC-01..ACC-04; pantalla de acceso y cuentas locales | completado (`2be8cd9`) |
+| 15 | `devolucion-responsable` | Núcleo (RF06) | DEV-01..DEV-04; responsable de la devolución | completado (`a76091e` → `9fc38c1` → `9695bde`) |
 
-**Estado:** C0–C5, C12 y C13 completados con evidencia RED → GREEN → REFACTOR en
-`openspec/ejecucion-c0.md` … `ejecucion-c5.md`, `ejecucion-c12.md` y
-`ejecucion-c13.md`. C6–C11 permanecen pendientes y requieren
-autorización/decisiones institucionales según cada proposal. C12 y C13 no
-sustituyen a esos changes: corrigen defectos documentados y aplican decisiones
-del usuario sobre perfiles y acceso local.
+**Estado:** C0–C5, C12, C13 y el change del núcleo `devolucion-responsable`
+completados con evidencia RED → GREEN → REFACTOR en `openspec/ejecucion-c0.md`
+… `ejecucion-c5.md`, `ejecucion-c12.md`, `ejecucion-c13.md` y
+`ejecucion-nucleo-dev.md`. C6–C11 permanecen pendientes y requieren
+autorización/decisiones institucionales según cada proposal. C12, C13 y este
+change no sustituyen a esos changes: corrigen defectos documentados y aplican
+decisiones del usuario sobre perfiles, acceso local y trazabilidad del núcleo.
