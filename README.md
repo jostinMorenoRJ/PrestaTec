@@ -58,7 +58,7 @@ Con la terminal situada en la carpeta del proyecto y pytest instalado:
 py -m pytest -v
 ```
 
-La suite tiene **19 pruebas**: 12 originales (dominio y HTTP) y 7 de caracterización en `tests/characterization/`, que documentan el comportamiento actual, incluidos defectos conocidos. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
+La suite tiene **35 pruebas**: 12 originales (dominio y HTTP), 7 de caracterización en `tests/characterization/` y 16 de los cambios C1–C3 (repositorio, reloj, persistencia, configuración y migración). Las de caracterización documentan el comportamiento actual, incluidos defectos conocidos. En VS Code también puedes usar el panel **Testing** o la tarea **PrestaTec: ejecutar pruebas** (`Ctrl+Shift+B`).
 
 Los marcadores configurados en `pyproject.toml` son `unit`, `integration`, `acceptance`, `nfr` y `characterization`. Por ejemplo:
 
@@ -87,6 +87,26 @@ Documentos de ejemplo:
 - Encargada Laura Gómez: `52111222`
 
 Para reiniciar la demostración, detén el servidor, elimina `data.json` y vuelve a ejecutar `py run.py`. Esto elimina también los registros creados durante la prueba.
+
+### Persistencia opcional (SQLite)
+
+El sistema sigue usando `data.json` por defecto. Para migrar de forma explícita, abre la paleta de comandos de VS Code y ejecuta **Tasks: Run Task → PrestaTec: migrar data.json a SQLite**, o desde la terminal:
+
+```powershell
+py migrar.py
+```
+
+El proceso crea `data.json.bak` con el contenido original y calcula su SHA-256; no sobrescribe `data.json`, `prestatec.db` ni el respaldo si ya existen. Para reemplazarlos deliberadamente se requiere `--forzar`.
+
+Para ejecutar con SQLite, configura el backend antes de iniciar el servidor:
+
+```powershell
+$env:PRESTATEC_BACKEND='sqlite'
+$env:PRESTATEC_DATA_FILE='prestatec.db'
+py run.py
+```
+
+Volver a `json` (o quitar las variables) restaura el comportamiento original sin tocar la lógica de negocio.
 
 ## 5. Módulos de la interfaz
 

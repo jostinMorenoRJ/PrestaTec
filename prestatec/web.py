@@ -5,13 +5,15 @@ import json
 import re
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
+from .config import Configuracion
 from .service import InventoryService, BusinessError
 
 ROOT = Path(__file__).resolve().parent.parent
 
 class PrestaTecApp:
-    def __init__(self, data_file=None, seed=True):
-        self.service = InventoryService(data_file or ROOT / 'data.json', seed=seed)
+    def __init__(self, data_file=None, seed=True, configuracion=None):
+        configuracion = configuracion or Configuracion(ruta_datos=data_file)
+        self.service = InventoryService(repository=configuracion.repositorio(), seed=seed)
 
     def dispatch(self, method, target, body=None):
         """Devuelve (status, contenido, tipo_mime, nombre_archivo)."""

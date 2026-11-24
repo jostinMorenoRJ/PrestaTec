@@ -3,9 +3,10 @@
 Relación verificable entre requisito institucional, especificación OpenSpec,
 prueba pytest (a crear en Etapa 5) e implementación (a partir de Etapa 7).
 
-**Estado:** la columna "Prueba" contiene el nombre planificado. Ninguna de estas
-pruebas existe todavía: se crearán y ejecutarán en RED en la Etapa 5–6. La
-columna "Implementación" permanecerá vacía hasta la Etapa 7.
+**Estado:** C0–C3 ejecutados. La columna "Prueba" conserva el nombre planificado
+cuando aún no se ha creado; donde existe una prueba real se indica su ruta. La
+columna "Implementación" solo se completa con módulos y commits verificados.
+Los requisitos marcados como *parcial* tienen otros changes pendientes.
 
 | Requisito | Change / Spec | Prueba planificada (Etapa 5) | Implementación |
 |---|---|---|---|
@@ -18,7 +19,7 @@ columna "Implementación" permanecerá vacía hasta la Etapa 7.
 | PDF-RNF01 Autenticación/RBAC | `identidad-rbac` (`seguridad/spec.md` SEC-01..04) | `test_RNF01_anonimo_recibe_401`, `test_RNF01_guarda_no_registra_usuarios` | — |
 | PDF-RNF02 Operaciones rápidas | `porteria-confiable` (POR-01) | `test_RF09_verificacion_menos_3s` | — |
 | PDF-RNF03 Interfaz clara | `disponibilidad-conflictos` (DIS-02) | `test_RNF03_ui_llama_disponibilidad_antes_de_listar` | — |
-| PDF-RNF04 Almacenamiento y respaldo | `persistencia-sqlite` + `respaldo-restauracion` (DAT-01..06) | `test_RNF04_migracion_mixta_sin_perdida`, `test_RNF04_restore_devuelve_estado_exacto` | — |
+| PDF-RNF04 Almacenamiento y respaldo (*parcial*) | `persistencia-sqlite` + `respaldo-restauracion` (DAT-01..06) | `tests/test_persistencia.py` (5), `tests/test_configuracion.py` (2), `tests/test_migracion_cli.py` (1); falta `test_RNF04_restore_devuelve_estado_exacto` | `prestatec/sqlite_repository.py`, `prestatec/migracion.py`, `prestatec/config.py`, `migrar.py` (C3) |
 | RES-01 Sin CDN | `porteria-confiable` (POR-02) | `test_RF09_qr_offline_sin_cdn` | — |
 | RES-02 Acceso por tipo | `identidad-rbac` (SEC-02) | `test_RNF01_encargado_entrega_y_devuelve` | — |
 | RES-03 Conservación/trazabilidad | `auditoria` (AUD-01..03) + `reportes-retencion` (REP-03) | `test_RES03_toda_mutacion_genera_un_evento`, `test_RES03_historial_inmutable` | — |
@@ -27,11 +28,14 @@ columna "Implementación" permanecerá vacía hasta la Etapa 7.
 | EXC-03 Falla sobre reservado | `auditoria` (AUD-01) | `test_EXC03_falla_no_elimina_reserva` | — |
 | INT-01 SDD | `gobernanza-linea-base` (GOV-02) | Verificación de artefactos OpenSpec | — |
 | INT-02 TDD RED→GREEN→REFACTOR | todos los changes | Evidencia de ejecución RED registrada en cada `tasks.md` | — |
-| INT-03 No borrar datos | `persistencia-sqlite` (DAT-02/04), `respaldo-restauracion` (DAT-05/06) | `test_RNF04_migracion_mixta_sin_perdida` | — |
-| INT-04 Separación de capas | `repositorio-interfaz` (ARQ-01) | `test_ARQ01_servicio_con_repositorio_falso` | — |
+| INT-03 No borrar datos (*parcial*) | `persistencia-sqlite` (DAT-02/04), `respaldo-restauracion` (DAT-05/06) | `test_DAT02_migracion_mixta_conserva_legacy_y_nuevo`, `test_DAT02_rechaza_sobrescribir_destino_sin_autorizacion` | `prestatec/migracion.py` (C3) |
+| INT-04 Separación de capas | `repositorio-interfaz` (ARQ-01) | `tests/test_repositorio.py` (4 pruebas, `a9aef30`) | `prestatec/repository.py`, `prestatec/service.py` (`a9aef30`) |
 | INT-05 Sin botones muertos | `disponibilidad-conflictos` (DIS-02) | `test_RNF03_ui_llama_disponibilidad_antes_de_listar` | — |
-| INT-06 Ejecutar pruebas | `gobernanza-linea-base` (GOV-01) | `pytest` en cada commit | — |
-| INT-07 Git y decisiones | `gobernanza-linea-base` (INT-07) | `git log` + `openspec/` completo | — |
+| INT-06 Ejecutar pruebas | `gobernanza-linea-base` (GOV-01) | suite completa ejecutada: 19 → 23 → 27 → 35 pruebas | `pyproject.toml`, `openspec/ejecucion-c0.md` … `ejecucion-c3.md` |
+| INT-07 Git y decisiones | `gobernanza-linea-base` (INT-07) | `git log --oneline`: `8a92475`, `96038a3`, `a9aef30`, `57aaf28` | repo local inicializado; sin remoto ni publicación |
+| ARC-01/02 Repositorio inyectado | `repositorio-interfaz` | `tests/test_repositorio.py` | `prestatec/repository.py` (`a9aef30`) |
+| ARC-03 Reloj UTC | `reloj-politicas` | `tests/test_reloj.py` (4 pruebas) | `prestatec/reloj.py`, `prestatec/service.py` (`57aaf28`) |
+| ARC-04 Políticas inyectables | `reloj-politicas` | `test_ARC04_politica_sin_valor_no_rechaza_por_duracion` | `prestatec/politicas.py` (`57aaf28`) |
 | RF08 Reportes | `reportes-retencion` (REP-01..04) | `test_RF08_csv_muestra_codigo_y_nombre_de_equipo` | — |
 | RF09 Portería | `porteria-confiable` (POR-01..04) | `test_RF09_escaneo_no_autoriza_sin_prestamo_valido` | — |
 
